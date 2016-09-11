@@ -1,0 +1,7 @@
+/*******************************
+         Site Overrides
+*******************************/
+
+i.deemphasized.icon {
+  opacity: 0.5 !important;
+}

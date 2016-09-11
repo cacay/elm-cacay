@@ -1,0 +1,12 @@
+elm-stuff/
+node_modules/
+dist/
+
+# Semantic UI
+src/styles/definitions/
+src/styles/themes/
+src/styles/theme.less
+src/styles/semantic.less
+
+# Mac
+.DS_Store

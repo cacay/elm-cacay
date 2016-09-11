@@ -1,0 +1,10 @@
+/*******************************
+         Site Overrides
+*******************************/
+
+
+.ui.right.labels .label,
+.ui.right.label {
+  margin: 0em 0em 0em @horizontalLabelMargin;
+}
+
