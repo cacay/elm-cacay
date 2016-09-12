@@ -14,5 +14,7 @@ app.get("/", function (request, response) {
 
 app.use(express.static(__dirname + '/dist'));
 
-// Initialize the server, bind listen port 8889
-app.listen(8889);
+// Initialize the server, listen on the provided port
+var port = process.env.PORT || 8889;
+console.log('Listening on port ' + port);
+app.listen(port);
