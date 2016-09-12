@@ -137,6 +137,10 @@ if ( TARGET_ENV === 'production' ) {
           to:   'images/'
         },
         {
+          from: 'src/papers/',
+          to:   'papers/'
+        },
+        {
           from: 'src/favicon.ico'
         }
       ]),
