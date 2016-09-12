@@ -124,7 +124,7 @@ viewBody model =
 
 card : Html msg
 card =
-  div [ class "ui card" ]
+  div [ class "ui centered card" ]
     [ div [ class "image" ]
         [ img [ src "./images/profile.jpg" ] [] ]
     , div [ class "content" ]
