@@ -124,9 +124,9 @@ viewBody model =
 
 card : Html msg
 card =
-  div [ class "ui card" ]
+  div [ class "ui centered card" ]
     [ div [ class "image" ]
-        [ img [ src "/images/profile.jpg" ] [] ]
+        [ img [ src "./images/profile.jpg" ] [] ]
     , div [ class "content" ]
         [ p [ rel "email" ]
             [ text "Email: "
@@ -181,7 +181,7 @@ about =
         ]
     , p []
         [ text "You can view my resume "
-        , a [ href "/papers/resume.pdf", target "_blank" ]
+        , a [ href "./papers/resume.pdf", target "_blank" ]
             [ text "here" ]
         , text "."
         ]
@@ -216,8 +216,8 @@ papers =
         , link = Just "http://www-kb.is.s.u-tokyo.ac.jp/ITRS2016/"
         , date = "June 2016"
         }
-    , link = Just "/papers/itrs2016.pdf"
-    , extra = [ ("Slides", "/papers/itrs2016-slides.pdf") ]
+    , link = Just "./papers/itrs2016.pdf"
+    , extra = [ ("Slides", "./papers/itrs2016-slides.pdf") ]
     }
   , { title = "Refinements for Session Typed Concurrency"
     , authors = [ acay, pfenning ]
@@ -226,10 +226,10 @@ papers =
         , link = Nothing
         , date = "May 2016"
         }
-    , link = Just "/papers/senior-thesis.pdf"
+    , link = Just "./papers/senior-thesis.pdf"
     , extra =
-        [ ("Slides", "/papers/senior-thesis-slides.pdf")
-        , ("Poster", "/papers/senior-thesis-poster.pdf")
+        [ ("Slides", "./papers/senior-thesis-slides.pdf")
+        , ("Poster", "./papers/senior-thesis-poster.pdf")
         ]
     }
   ]
