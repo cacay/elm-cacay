@@ -14,11 +14,16 @@
     "start": "webpack-dev-server --hot --inline --content-base src/",
     "build": "rimraf dist && webpack",
     "watch": "webpack --watch",
-    "postinstall": "rsync -r node_modules/semantic-ui-less/themes node_modules/semantic-ui-less/definitions node_modules/semantic-ui-less/theme.less node_modules/semantic-ui-less/semantic.less src/styles/ && find src/styles -type f -exec chmod -x {} \\; && elm package install -y",
-    "heroku-postbuild": "npm run build"
+    "postinstall": "[ \"$NODE_ENV\" == production ] || rsync -r node_modules/semantic-ui-less/themes node_modules/semantic-ui-less/definitions node_modules/semantic-ui-less/theme.less node_modules/semantic-ui-less/semantic.less src/styles/ && find src/styles -type f -exec chmod -x {} \\; && elm package install -y"
   },
 
   "dependencies": {
+    "express": "^4.14.0",
+    "compression": "^1.6.2",
+    "body-parser": "^1.15.2"
+  },
+
+  "devDependencies": {
     "autoprefixer": "^6.3.6",
     "babel-core": "^6.9.0",
     "babel-eslint": "^6.0.4",
@@ -44,12 +49,6 @@
     "webpack": "^1.13.1",
     "webpack-merge": "^0.14.1",
 
-    "express": "^4.14.0",
-    "compression": "^1.6.2",
-    "body-parser": "^1.15.2"
-  },
-
-  "devDependencies": {
     "elm-hot-loader": "^0.3.2",
     "webpack-dev-server": "^1.14.1"
   },
