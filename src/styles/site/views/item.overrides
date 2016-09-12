@@ -1,3 +1,21 @@
 /*******************************
     User Variable Overrides
 *******************************/
+
+.ui.compact.items > .item > .content > .header {
+  margin-bottom: 0;
+}
+
+.ui.compact.items > .item > .content > .description {
+  margin-top: 0;
+}
+
+.ui.compact.items > .item .meta {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.ui.compact.items > .item .extra {
+  margin-top : 0;
+}
+
