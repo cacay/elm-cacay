@@ -4,16 +4,19 @@
   "version": "1.0.0",
   "license": "MIT",
   "author": "Cosku Acay",
+
   "repository": {
     "type": "git",
     "url": "https://github.com/cacay/elm-cacay"
   },
+
   "scripts": {
     "start": "webpack-dev-server --hot --inline --content-base src/",
     "build": "rimraf dist && webpack",
     "watch": "webpack --watch",
     "postinstall": "rsync -r node_modules/semantic-ui-less/themes node_modules/semantic-ui-less/definitions node_modules/semantic-ui-less/theme.less node_modules/semantic-ui-less/semantic.less src/styles/ && find src/styles -type f -exec chmod -x {} \\; && elm package install -y"
   },
+
   "devDependencies": {
     "autoprefixer": "^6.3.6",
     "babel-core": "^6.9.0",
@@ -41,5 +44,14 @@
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1",
     "webpack-merge": "^0.14.1"
+  },
+
+  "dependencies": {
+    "express": "^4.14.0",
+    "compression": "^1.6.2",
+    "body-parser": "^1.15.2"
+  },
+  "engines": {
+    "node": "0.10.x"
   }
 }
