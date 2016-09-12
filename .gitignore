@@ -1,6 +1,5 @@
 elm-stuff/
 node_modules/
-dist/
 
 # Semantic UI
 src/styles/definitions/
