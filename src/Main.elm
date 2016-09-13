@@ -84,11 +84,10 @@ builder2messages builder =
 
 view : Model -> Html Msg
 view model =
-  div []
+  div [] <|
     [ viewMenu model
-    , div [ style [("padding-bottom", "4.2rem")] ] [ viewBody model ]
-    , viewFooter model
-    ]
+    , viewBody model
+    ] ++ viewFooter model
 
 
 viewMenu : Model -> Html Msg
@@ -188,20 +187,29 @@ about =
     ]
 
 
-viewFooter : Model -> Html Msg
+viewFooter : Model -> List (Html Msg)
 viewFooter model =
-  footer [ class "ui inverted vertical segment" ]
-    [ div [ class "ui two column grid container" ]
-        [ span [ class "column" ]
-            [ text "© 2016 "
-            , span [ itemprop "name" ] [ text "Coşku Acay" ]
-            ]
-        , span [ class "right aligned column" ]
-            [ text "View this page on "
-            , a [ href "https://github.com/cacay/elm-cacay", target "_blank" ]
-                [ text "GitHub" ]
-            ]
-        ]
+  let
+    children =
+      [ div [ class "ui two column stackable grid container" ]
+          [ span [ class "column" ]
+              [ text "© 2016 "
+              , span [ itemprop "name" ] [ text "Coşku Acay" ]
+              ]
+          , span [ class "right aligned column" ]
+              [ text "View this page on "
+              , a [ href "https://github.com/cacay/elm-cacay", target "_blank" ]
+                  [ text "GitHub" ]
+              ]
+          ]
+      ]
+  in
+    [ div [ class "ui inverted vertical segment"
+          , style [ ("visibility", "hidden"), ("margin-top", "1em") ]
+          ]
+        children
+    , footer [ class "ui inverted vertical segment" ]
+        children
     ]
 
 
