@@ -164,8 +164,6 @@ if ( TARGET_ENV === prod ) {
         }
       ]),
 
-      new webpack.optimize.OccurenceOrderPlugin(),
-
       // minify & mangle JS/CSS
       new webpack.optimize.UglifyJsPlugin({
           minimize:   true,
