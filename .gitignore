@@ -1,6 +1,12 @@
 elm-stuff/
 node_modules/
 
+# Node
+npm-debug.log
+
+# IntelliJ
+.idea
+
 # Semantic UI
 src/styles/definitions/
 src/styles/themes/

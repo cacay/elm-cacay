@@ -6,43 +6,46 @@ var autoprefixer        = require( 'autoprefixer' );
 var ExtractTextPlugin   = require( 'extract-text-webpack-plugin' );
 var CopyWebpackPlugin   = require( 'copy-webpack-plugin' );
 
-console.log( 'WEBPACK GO!');
 
-// detemine build env
-var TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? 'production' : 'development';
+const prod = 'production';
+const dev = 'development';
 
-// common webpack config
+// determine build env
+const TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? prod : dev;
+
+console.log('WEBPACK GO! Building for ' + TARGET_ENV);
+
+// common webpack config (valid for dev and prod)
 var commonConfig = {
 
   output: {
-    path:       path.resolve( __dirname, 'dist/' ),
+    path:     path.resolve( __dirname, 'dist/' ),
     filename: '[hash].js',
   },
 
   resolve: {
-    modulesDirectories: ['node_modules'],
-    extensions:         ['', '.js', '.elm']
+    modules:            ['node_modules'],
+    extensions:         ['.js', '.elm']
   },
 
   module: {
     noParse: /\.elm$/,
-    // preLoaders: [
-    //   { test: /\.js$/
-    //   , exclude: ['/src/styles/', /node_modules/]
-    //   , loader: 'eslint-loader'
-    //   }
-    // ],
-    loaders: [
-      { test: /\.js$/
-      , exclude: ['/src/styles/', /node_modules/]
-      , loader: 'babel-loader'
-      , query: { presets: ['es2015'] }
-      },
-      {
-        test: /\.(png|jpg|gif|eot|ttf|woff|woff2|svg)$/,
+    rules: [{
+      test: /\.js$/,
+      exclude: ['/src/styles/', /node_modules/],
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: ['es2015']
+        }
+      }
+    },
+    {
+      test: /\.(png|jpg|gif|eot|ttf|woff|woff2|svg)$/,
+      use: {
         loader: 'file-loader'
       }
-    ]
+    }]
   },
 
   plugins: [
@@ -51,23 +54,26 @@ var commonConfig = {
       inject:   'body',
       filename: 'index.html'
     }),
+    new webpack.LoaderOptionsPlugin({
+      options: {
+        postcss: [
+          autoprefixer({browsers: ['last 2 versions']})
+        ],
+        eslint: {
+          failOnWarning: true,
+          failOnError: true
+        }
+      }
+    }),
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery"
     })
   ],
-
-  eslint: {
-    failOnWarning: true,
-    failOnError: true
-  },
-
-  postcss: [ autoprefixer( { browsers: ['last 2 versions'] } ) ],
-
 }
 
 // additional webpack settings for local env (when invoked by 'npm start')
-if ( TARGET_ENV === 'development' ) {
+if ( TARGET_ENV === dev ) {
   console.log( 'Serving locally...');
 
   module.exports = merge( commonConfig, {
@@ -79,19 +85,27 @@ if ( TARGET_ENV === 'development' ) {
 
     devServer: {
       inline:   true,
-      progress: true
+      hot: true,
+      historyApiFallback: true
     },
 
     module: {
-      loaders: [
+      rules: [
         {
           test:    /\.elm$/,
           exclude: [/elm-stuff/, /node_modules/],
-          loader:  'elm-hot!elm-webpack?verbose=true&warn=true'
+          use: [{
+            loader: 'elm-webpack-loader',
+            options: {
+              verbose: true,
+              warn: true,
+              debug: true
+            }
+          }]
         },
         {
           test: /\.(css|less)$/,
-          loaders: [
+          use: [
             'style-loader',
             'css-loader',
             'postcss-loader',
@@ -105,7 +119,7 @@ if ( TARGET_ENV === 'development' ) {
 }
 
 // additional webpack settings for prod env (when invoked via 'npm run build')
-if ( TARGET_ENV === 'production' ) {
+if ( TARGET_ENV === prod ) {
   console.log( 'Building for prod...');
 
   module.exports = merge( commonConfig, {
@@ -113,24 +127,29 @@ if ( TARGET_ENV === 'production' ) {
     entry: path.join( __dirname, 'src/index.js' ),
 
     module: {
-      loaders: [
+      rules: [
         {
           test:    /\.elm$/,
           exclude: [/elm-stuff/, /node_modules/],
-          loader:  'elm-webpack'
+          use:  'elm-webpack-loader'
         },
         {
           test: /\.(css|less)$/,
-          loader: ExtractTextPlugin.extract( 'style-loader', [
-            'css-loader',
-            'postcss-loader',
-            'less-loader'
-          ])
+          use: ExtractTextPlugin.extract({
+            fallback: 'style-loader',
+            use: ['css-loader', 'postcss-loader', 'less-loader']
+          })
         }
       ]
     },
 
     plugins: [
+      // extract CSS into a separate file
+      new ExtractTextPlugin({
+        filename: './[hash].css',
+        allChunks: true
+      }),
+
       new CopyWebpackPlugin([
         {
           from: 'src/images/',
@@ -146,9 +165,6 @@ if ( TARGET_ENV === 'production' ) {
       ]),
 
       new webpack.optimize.OccurenceOrderPlugin(),
-
-      // extract CSS into a separate file
-      new ExtractTextPlugin( './[hash].css', { allChunks: true } ),
 
       // minify & mangle JS/CSS
       new webpack.optimize.UglifyJsPlugin({
