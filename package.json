@@ -4,25 +4,21 @@
   "version": "1.0.0",
   "license": "MIT",
   "author": "Cosku Acay",
-
   "repository": {
     "type": "git",
     "url": "https://github.com/cacay/elm-cacay"
   },
-
   "scripts": {
     "start": "webpack-dev-server --hot --inline --content-base src/",
     "build": "rimraf dist && webpack",
     "watch": "webpack --watch",
     "postinstall": "[ \"$NODE_ENV\" == production ] || rsync -r node_modules/semantic-ui-less/themes node_modules/semantic-ui-less/definitions node_modules/semantic-ui-less/theme.less node_modules/semantic-ui-less/semantic.less src/styles/ && find src/styles -type f -exec chmod -x {} \\; && elm package install -y"
   },
-
   "dependencies": {
     "express": "*",
     "compression": "*",
     "body-parser": "*"
   },
-
   "devDependencies": {
     "autoprefixer": "*",
     "babel-core": "*",
@@ -31,29 +27,27 @@
     "babel-preset-es2015": "*",
     "eslint": "*",
     "eslint-loader": "*",
-    "semantic-ui-less": "*",
-    "copy-webpack-plugin": "*",
-    "css-loader": "*",
     "elm": "^0.18",
-    "elm-webpack-loader": "*",
+    "webpack": "*",
+    "webpack-merge": "*",
+    "webpack-dev-server": "*",
+    "copy-webpack-plugin": "*",
     "extract-text-webpack-plugin": "*",
-    "file-loader": "*",
     "html-webpack-plugin": "*",
-    "less": "*",
+    "less-plugin-rewrite-import": "*",
+    "css-loader": "*",
     "postcss-loader": "*",
-    "rimraf": "*",
+    "file-loader": "*",
     "less-loader": "*",
     "style-loader": "*",
     "url-loader": "*",
-    "less-plugin-rewrite-import": "*",
-    "webpack": "*",
-    "webpack-merge": "*",
-
     "elm-hot-loader": "*",
-    "webpack-dev-server": "*"
+    "elm-webpack-loader": "*",
+    "less": "*",
+    "semantic-ui-less": "*",
+    "rimraf": "*"
   },
-
   "engines": {
-    "node": "^6.11"
+    "node": "^8.9.4"
   }
 }
