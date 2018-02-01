@@ -28,13 +28,15 @@ def rev_parse_commit(commit):
         raise InvalidCommitException(commit)
 
 
+# Make sure that all changes have been committed
+def ensure_clean():
+    if utility.sh(['git', 'status', '--porcelain']) != "":
+        raise Exception("You have uncommitted changes! Commit before deploying.")
+
 def main():
+    ensure_clean()
+
     env = {
-        'GIT_DIR': os.path.join(
-            utility.sh(['git', 'rev-parse', '--show-toplevel']),
-            '.git'
-        ),
-        'GIT_WORK_TREE': utility.sh(['git', 'rev-parse', '--show-toplevel']),
         'GIT_INDEX_FILE': utility.tmp_file(),
     }
 
