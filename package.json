@@ -12,7 +12,7 @@
     "start": "webpack-dev-server --hot --inline --content-base src/",
     "build": "rimraf dist && webpack",
     "watch": "webpack --watch",
-    "postinstall": "[ \"$NODE_ENV\" == \"production\" ] || rsync -r node_modules/semantic-ui-less/themes node_modules/semantic-ui-less/definitions node_modules/semantic-ui-less/theme.less node_modules/semantic-ui-less/semantic.less src/styles/ && find src/styles -type f -exec chmod -x {} \\; && elm package install -y"
+    "postinstall": "[ \"$NODE_ENV\" == production ] && exit 0; rsync -r node_modules/semantic-ui-less/themes node_modules/semantic-ui-less/definitions node_modules/semantic-ui-less/theme.less node_modules/semantic-ui-less/semantic.less src/styles/ && find src/styles -type f -exec chmod -x {} \\; && elm package install -y"
   },
   "dependencies": {
     "express": "*",
