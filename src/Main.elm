@@ -185,12 +185,13 @@ about : Html msg
 about =
     div []
         [ p []
-            [ text "I recently graduated from "
+            [ text "I received my undergraduate degree from "
             , a [ href "http://www.cmu.edu/", target "_blank" ]
                 [ text "Carnegie Mellon University" ]
-            , text " and now I work at "
-            , a [ href "https://www.whatsapp.com/", target "_blank" ]
-                [ text "WhatsApp" ]
+            , text ". "
+            , text "I am now a PhD student at "
+            , a [ href "https://www.cornell.edu/", target "_blank" ]
+                [ text "Cornell" ]
             , text "."
             ]
         , p []
