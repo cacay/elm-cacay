@@ -1,6 +1,0 @@
-/*-------------------
-   Flag Variables
---------------------*/
-
-@spritePath: "../../themes/@{theme}/assets/images/flags.png";
-

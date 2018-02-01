@@ -1,7 +1,0 @@
-/*******************************
-     User Global Variables
-*******************************/
-
-@fontPath   : '../../@{theme}/assets/fonts';
-@imagePath  : '../../@{theme}/assets/images';
-
