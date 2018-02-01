@@ -54,7 +54,7 @@ def main():
     commit = git(['commit-tree', tree, '-p', deploy_hash, '-m', "deploy " + head_hash])
 
 
-    git(['update-ref', 'deploy', commit])
+    git(['branch', '-f', 'deploy', commit])
     git(['push', 'origin', 'deploy'])
     print('New commit: ', commit)
 
