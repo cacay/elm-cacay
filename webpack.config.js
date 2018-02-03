@@ -87,7 +87,8 @@ var commonConfig = {
     new FaviconsWebpackPlugin('./src/favicon.png'),
 
     new HtmlWebpackPlugin({
-      template: 'src/index.html',
+      // using .ejs for template so HTML loaders don't pick it up
+      template: 'src/index.ejs',
       inject:   'body',
       filename: 'index.html'
     }),
