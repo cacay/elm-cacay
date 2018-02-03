@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "webpack-dev-server --hot --inline --content-base src/",
-    "build": "rimraf dist && webpack",
+    "build": "webpack",
     "watch": "webpack --watch",
     "postinstall": "if-env NODE_ENV=production || (rsync -r node_modules/semantic-ui-less/themes node_modules/semantic-ui-less/definitions node_modules/semantic-ui-less/theme.less node_modules/semantic-ui-less/semantic.less src/styles/ && find src/styles -type f -exec chmod -x {} \\; && elm package install -y)"
   },
@@ -32,6 +32,7 @@
     "webpack": "*",
     "webpack-merge": "*",
     "webpack-dev-server": "*",
+    "clean-webpack-plugin": "*",
     "copy-webpack-plugin": "*",
     "extract-text-webpack-plugin": "*",
     "html-webpack-plugin": "*",
@@ -47,7 +48,6 @@
     "elm-webpack-loader": "*",
     "less": "*",
     "semantic-ui-less": "*",
-    "rimraf": "*",
     "reveal.js": "^3.6.0"
   },
   "engines": {

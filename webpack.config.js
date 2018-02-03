@@ -4,6 +4,7 @@ const merge                 = require('webpack-merge');
 const HtmlWebpackPlugin     = require('html-webpack-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 const ExtractTextPlugin     = require('extract-text-webpack-plugin');
+const CleanWebpackPlugin    = require("clean-webpack-plugin");
 const CopyWebpackPlugin     = require('copy-webpack-plugin');
 
 
@@ -156,6 +157,12 @@ if ( TARGET_ENV === prod ) {
     },
 
     plugins: [
+      new CleanWebpackPlugin(
+        ["dist"],
+        {
+          root: __dirname
+        }
+      ),
       new CopyWebpackPlugin([
         {
           from: 'src/images/',
