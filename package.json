@@ -15,9 +15,9 @@
     "postinstall": "if-env NODE_ENV=production || (rsync -r node_modules/semantic-ui-less/themes node_modules/semantic-ui-less/definitions node_modules/semantic-ui-less/theme.less node_modules/semantic-ui-less/semantic.less src/styles/ && find src/styles -type f -exec chmod -x {} \\; && elm package install -y)"
   },
   "dependencies": {
-    "express": "*",
-    "compression": "*",
     "body-parser": "*",
+    "compression": "*",
+    "express": "*",
     "if-env": "*"
   },
   "devDependencies": {
@@ -35,6 +35,7 @@
     "copy-webpack-plugin": "*",
     "extract-text-webpack-plugin": "*",
     "html-webpack-plugin": "*",
+    "favicons-webpack-plugin": "*",
     "less-plugin-rewrite-import": "*",
     "css-loader": "*",
     "postcss-loader": "*",
@@ -46,7 +47,8 @@
     "elm-webpack-loader": "*",
     "less": "*",
     "semantic-ui-less": "*",
-    "rimraf": "*"
+    "rimraf": "*",
+    "reveal.js": "^3.6.0"
   },
   "engines": {
     "node": "^8.9.4"
