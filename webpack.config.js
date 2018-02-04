@@ -29,9 +29,15 @@ const extractCss = new ExtractTextPlugin({
 // common webpack config (valid for dev and prod)
 var commonConfig = {
 
+  entry: {
+    index: path.join( __dirname, 'src/index.js' ),
+    presentation: path.join( __dirname, 'src/presentation.js' ),
+  },
+
   output: {
-    path:     path.resolve(__dirname, 'dist/'),
-    filename: '[hash].js',
+    path:       path.resolve(__dirname, 'dist/'),
+    publicPath: '/',
+    filename:   '[name].js',
   },
 
   resolve: {
@@ -45,7 +51,7 @@ var commonConfig = {
     rules: [
       {
         test: /\.js$/,
-        exclude: ['/src/styles/', /node_modules/],
+        exclude: [/node_modules/],
         use: [
           {
             loader: 'babel-loader',
@@ -62,8 +68,43 @@ var commonConfig = {
           }
         ]
       },
+      // Don't bundle reveal.js files; css is handled in the next rule to
+      // process dependencies
+      {
+        test: /\.(html|js|eot|ttf|woff|woff2)$/,
+        include: [/reveal\.js/],
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[path][name].[ext]',
+              context: path.join( __dirname, 'node_modules' ),
+            }
+          }
+        ]
+      },
+      // Don't bundle reveal.js printing CSS files
+      {
+        test: /\.css$/,
+        include: [/reveal\.js[\/\\]css[\/\\]print/],
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[path][name].[ext]',
+              context: path.join( __dirname, 'node_modules' ),
+            }
+          }
+        ]
+      },
       {
         test: /\.(css|less)$/,
+        include: [
+            // extend this list as necessary
+            /src/,
+            /reveal\.js/,
+        ],
+        exclude: [/reveal\.js[\/\\]css[\/\\]print/],
         use: extractCss.extract({
           fallback: 'style-loader',
           use: [
@@ -72,12 +113,11 @@ var commonConfig = {
             'less-loader'
           ]
         }),
-        // Exclude Semantic UI; these are handled by semantic-ui-less-module-loader
-        exclude: [/[\/\\]node_modules[\/\\]semantic-ui-less[\/\\]/]
       },
       // for semantic-ui-less files:
       {
         test: /\.less$/,
+        include: [/semantic-ui-less/],
         use: extractCss.extract({
           fallback: 'style-loader',
           use: [
@@ -92,10 +132,13 @@ var commonConfig = {
             }
           ]
         }),
-        include: [/[\/\\]node_modules[\/\\]semantic-ui-less[\/\\]/]
       },
       {
         test: /\.(png|jpg|gif|eot|ttf|woff|woff2|svg)$/,
+        include: [
+            /src/,
+            /semantic-ui-less/
+        ],
         use: {
           loader: 'file-loader'
         }
@@ -110,9 +153,17 @@ var commonConfig = {
 
     new HtmlWebpackPlugin({
       // using .ejs for template so HTML loaders don't pick it up
+      filename: 'index.html',
       template: 'src/index.ejs',
       inject:   'body',
-      filename: 'index.html'
+      chunks: ['index'],
+    }),
+
+    new HtmlWebpackPlugin({
+      // using .ejs for template so HTML loaders don't pick it up
+      filename: 'presentations/unicode.html',
+      template: 'src/presentations/unicode.html',
+      chunks: ['presentation'],
     }),
 
     new webpack.ProvidePlugin({
@@ -128,10 +179,9 @@ if ( TARGET_ENV === dev ) {
 
   module.exports = merge( commonConfig, {
 
-    entry: [
-      'webpack-dev-server/client?http://localhost:8080',
-      path.join( __dirname, 'src/index.js' )
-    ],
+    entry: {
+      dev: 'webpack-dev-server/client?http://localhost:8080',
+    },
 
     devServer: {
       inline: true,
@@ -164,8 +214,6 @@ if ( TARGET_ENV === prod ) {
   console.log( 'Building for prod...');
 
   module.exports = merge( commonConfig, {
-
-    entry: path.join( __dirname, 'src/index.js' ),
 
     module: {
       rules: [

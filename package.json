@@ -12,7 +12,7 @@
     "start": "webpack-dev-server --hot --inline --content-base src/",
     "build": "webpack",
     "watch": "webpack --watch",
-    "postinstall": "if-env NODE_ENV=production || elm package install -y"
+    "postinstall": "if-env NODE_ENV=production || (elm package install -y)"
   },
   "dependencies": {
     "body-parser": "*",
@@ -44,7 +44,7 @@
     "postcss-loader": "*",
     "reveal.js": "^3.6.0",
     "semantic-ui-less": "*",
-    "semantic-ui-less-module-loader": "^1.0.0",
+    "semantic-ui-less-module-loader": "*",
     "style-loader": "*",
     "url-loader": "*",
     "webpack": "*",

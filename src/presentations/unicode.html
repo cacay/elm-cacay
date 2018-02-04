@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+
+        <title>You Don't Support Unicode!</title>
+
+        <meta name="author" content="Josh Acay">
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+
+        <!-- Printing and PDF exports -->
+        <script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi )
+			    ? "<%= require('reveal.js/css/print/pdf.css')%>"
+			    : "<%= require('reveal.js/css/print/paper.css')%>";
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+        <!--[if lt IE 9]>
+        <script src="<%= require('reveal.js/lib/js/html5shiv.js')%>"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+        <div class="reveal">
+
+            <div class="slides">
+                <section>
+                    <h2>Barebones Presentation</h2>
+                    <p>This example contains the bare minimum includes and markup required to run a reveal.js presentation.</p>
+                </section>
+
+                <section>
+                    <h2>No Theme</h2>
+                    <p>There's no theme included, so it will fall back on browser defaults.</p>
+                </section>
+
+                <section data-markdown>
+                    ## Markdown support
+
+                    Write content using inline or external Markdown.
+                    Instructions and more info available in the [readme](https://github.com/hakimel/reveal.js#markdown).
+                </section>
+            </div>
+        </div>
+
+        <script src="<%= require('reveal.js/lib/js/head.min.js')%>"></script>
+        <script src="<%= require('reveal.js/js/reveal.js')%>"></script>
+    </body>
+</html>
