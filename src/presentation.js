@@ -37,23 +37,29 @@ Reveal.initialize({
             callback: function() { hljs.initHighlightingOnLoad(); }
         },
 
+        // MathJax
+        {
+            src: require('reveal.js/plugin/math/math.js'),
+            async: true
+        },
+
         // Zoom in and out with Alt+click
         {
             src: require('reveal.js/plugin/zoom-js/zoom.js'),
             async: true
         },
 
-        // Speaker notes
+        // Search slides with Ctrl+Shift+F
+        {
+            src: require('reveal.js/plugin/search/search.js'),
+            async: true
+        },
+
+        // Speaker notes with F
         {
             src: require('reveal.js/plugin/notes/notes.js'),
             async: true
         },
-
-        // MathJax
-        {
-            src: require('reveal.js/plugin/math/math.js'),
-            async: true
-        }
     ]
 });
 
