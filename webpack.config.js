@@ -71,7 +71,28 @@ var commonConfig = {
             'postcss-loader',
             'less-loader'
           ]
-        })
+        }),
+        // Exclude Semantic UI; these are handled by semantic-ui-less-module-loader
+        exclude: [/[\/\\]node_modules[\/\\]semantic-ui-less[\/\\]/]
+      },
+      // for semantic-ui-less files:
+      {
+        test: /\.less$/,
+        use: extractCss.extract({
+          fallback: 'style-loader',
+          use: [
+            'css-loader',
+            'postcss-loader',
+            {
+              loader: 'semantic-ui-less-module-loader',
+              options: {
+                themeConfigPath: path.join(__dirname, 'src/styles/theme.config'),
+                siteFolder: path.join(__dirname, 'src/styles/site')
+              }
+            }
+          ]
+        }),
+        include: [/[\/\\]node_modules[\/\\]semantic-ui-less[\/\\]/]
       },
       {
         test: /\.(png|jpg|gif|eot|ttf|woff|woff2|svg)$/,

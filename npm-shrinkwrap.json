@@ -7003,6 +7003,12 @@
       "integrity": "sha1-eCA6TRwyiuHYbcpkYONptX9AVa4=",
       "dev": true
     },
+    "lodash.assign": {
+      "version": "4.2.0",
+      "resolved": "https://registry.npmjs.org/lodash.assign/-/lodash.assign-4.2.0.tgz",
+      "integrity": "sha1-DZnzzNem0mHRm9rrkkUAXShYCOc=",
+      "dev": true
+    },
     "lodash.camelcase": {
       "version": "4.3.0",
       "resolved": "https://registry.npmjs.org/lodash.camelcase/-/lodash.camelcase-4.3.0.tgz",
@@ -11181,6 +11187,18 @@
       "dev": true,
       "requires": {
         "jquery": "3.3.1"
+      }
+    },
+    "semantic-ui-less-module-loader": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/semantic-ui-less-module-loader/-/semantic-ui-less-module-loader-1.0.0.tgz",
+      "integrity": "sha1-QIL7C5+5kUpsV3OmlDaSrPYtBI4=",
+      "dev": true,
+      "requires": {
+        "less": "2.7.3",
+        "less-loader": "4.0.5",
+        "loader-utils": "1.1.0",
+        "lodash.assign": "4.2.0"
       }
     },
     "semver": {

@@ -1,5 +1,5 @@
 // pull in desired CSS/SASS files
-import './styles/main.less'
+import 'semantic-ui-less/semantic.less'
 
 
 // inject bundled Elm app into div#main
