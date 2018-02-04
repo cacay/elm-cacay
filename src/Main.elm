@@ -118,9 +118,9 @@ viewBody model =
         [ h1 [ class "ui dividing header" ]
             [ text "Josh Acay" ]
         , div [ class "ui stackable grid" ]
-            [ div [ class "four wide column" ]
+            [ div [ class "five wide column" ]
                 [ card ]
-            , div [ class "twelve wide column" ]
+            , div [ class "eleven wide column" ]
                 [ h2 [ class "ui header" ]
                     [ text "About Me" ]
                 , about
@@ -138,18 +138,20 @@ card =
     div [ class "ui centered card" ]
         [ div [ class "image" ]
             [ img [ src "./images/profile.jpg" ] [] ]
-        , div [ class "content" ]
-            [ p [ rel "email" ]
-                [ text "Email: "
-                , a [ href "mailto:mailto:coskuacay@gmail.com", rel "email" ]
-                    [ text "coskuacay@gmail.com" ]
-                ]
-            , p [ rel "phone" ]
-                [ text "Phone: +1 (412) 580-7442" ]
-            ]
+
+        -- , div [ class "content" ] []
         , div [ class "extra content" ]
             [ div [ class "ui equal width grid" ]
                 [ div [ class "column" ]
+                    [ a
+                        [ href "mailto:mailto:coskuacay@gmail.com"
+                        , target "_blank"
+                        , title "Email"
+                        , rel "email"
+                        ]
+                        [ i [ class "big mail icon" ] [] ]
+                    ]
+                , div [ class "column" ]
                     [ a
                         [ href "https://www.facebook.com/coskuacay"
                         , target "_blank"
@@ -207,12 +209,8 @@ viewFooter : Model -> List (Html Msg)
 viewFooter model =
     let
         children =
-            [ div [ class "ui two column stackable grid container" ]
-                [ span [ class "column" ]
-                    [ text "© 2016 "
-                    , span [ itemprop "name" ] [ text "Coşku Acay" ]
-                    ]
-                , span [ class "right aligned column" ]
+            [ div [ class "ui right aligned container" ]
+                [ span []
                     [ text "View this page on "
                     , a [ href "https://github.com/cacay/elm-cacay", target "_blank" ]
                         [ text "GitHub" ]
@@ -221,11 +219,11 @@ viewFooter model =
             ]
     in
     [ div
-        [ class "ui inverted vertical segment"
+        [ class "ui inverted vertical footer segment"
         , style [ ( "visibility", "hidden" ), ( "margin-top", "1em" ) ]
         ]
         children
-    , footer [ class "ui inverted vertical segment" ]
+    , footer [ class "ui inverted vertical footer segment" ]
         children
     ]
 
