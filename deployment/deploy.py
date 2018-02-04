@@ -30,8 +30,9 @@ def rev_parse_commit(commit):
 
 # Make sure that all changes have been committed
 def ensure_clean():
-    if utility.sh(['git', 'status', '--porcelain']) != "":
+    if utility.sh(['git', 'status', '--porcelain', '--untracked-files=no']) != "":
         raise Exception("You have uncommitted changes! Commit before deploying.")
+
 
 def main():
     ensure_clean()
