@@ -7,7 +7,7 @@ all:
 	echo "Run 'make deploy' to deploy to Heroku"
 
 
-dist: node_modules $(shell find . -type f)
+dist: node_modules $(shell find . -type f | sed 's/ /\\ /g')
 		npm run build
 
 
