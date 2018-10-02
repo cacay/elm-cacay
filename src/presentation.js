@@ -9,6 +9,7 @@ Reveal.initialize({
     // Set aspect ration to 16:9
     width: 1280,
     height: 720,
+    // center: false,
 
     // Display the page number of the current slide
 	slideNumber: true,

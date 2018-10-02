@@ -194,7 +194,7 @@ if ( TARGET_ENV === dev ) {
     devServer: {
       inline: true,
       hot: true,
-      historyApiFallback: true
+      historyApiFallback: true,
     },
 
     module: {

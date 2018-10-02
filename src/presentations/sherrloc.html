@@ -37,7 +37,7 @@
 
     <body>
     <div class="reveal">
-        <div class="slides">
+        <div class="slides borders">
             <section>
                 <h1>SHErrLoc</h1>
                 <h3>A Static Holistic Error Locator</h3>
@@ -60,51 +60,6 @@
                 </div>
 
                 <h3 style="margin-top: 1em">PLDG 10/3</h3>
-            </section>
-
-            <section>
-                <h2>Error Messages Suck</h2>
-
-                <ul>
-                    <li> OCaml
-                        <pre><code class="ocaml" data-trim data-noescape>
-                            let f (lst : move list): (float * float) list =
-                                let rec loop lst x y dir acc =
-                                    if lst = [] then
-                                        acc
-                                    else
-                                        <span class="fragment mark-red" data-fragment-index="1">print_string "foo"</span>
-                                in
-                                List.rev ( loop lst 0.0 0.0 0.0 <span class="fragment mark-orange" data-fragment-index="1">[(0.0,0.0)]</span> )
-                        </code></pre>
-                    </li>
-
-                    <div style="zoom: 75%">
-                        <div class="fragment" data-fragment-index="1">
-                            <span class="bg-orange">OCaml (4.07.0) Report:</span>
-                            <pre><code class="nohighlight" data-trim>
-                                This variant expression is expected to have type unit
-                                The constructor :: does not belong to type unit
-                            </code></pre>
-                        </div>
-
-                        <div class="fragment" data-fragment-index="2">
-                            <span class="bg-red">SHErrLoc Report:</span>
-                            <pre><code class="nohighlight" data-trim>
-                                Expressions in the source code that appear most
-                                likely to be wrong: print_string “foo”
-                            </code></pre>
-                        </div>
-                    </div>
-
-
-                    <aside class="notes">
-                        OCaml doesn't show the expression at all! Only gives source range.
-                    </aside>
-                    <aside class="notes">
-                        OCaml message refers to desugared code. There is no <pre>::</pre> in source.
-                    </aside>
-                </ul>
             </section>
 
             <section>
@@ -136,6 +91,10 @@
                                     likely to be wrong: n == 1
                                 </code></pre>
                             </div>
+
+                            <aside class="notes">
+                                But of course Haskell sucks!
+                            </aside>
                         </li>
                     </ul>
                 </section>
@@ -173,11 +132,212 @@
                 </section>
             </section>
 
-            <section data-markdown>
-                ## Markdown support
+            <section>
+                Of course, it's Haskell!
+            </section>
 
-                Write content using inline or external Markdown.
-                Instructions and more info available in the [readme](https://github.com/hakimel/reveal.js#markdown).
+            <section>
+                <h2>OCaml Sucks Worse</h2>
+
+                <ul>
+                    <li> OCaml
+                        <pre><code class="ocaml" data-trim data-noescape>
+                            let f (lst : move list): (float * float) list =
+                                let rec loop lst x y dir acc =
+                                    if lst = [] then
+                                        acc
+                                    else
+                                        <span class="fragment mark-red" data-fragment-index="2">print_string "foo"</span>
+                                in
+                                List.rev ( loop lst 0.0 0.0 0.0 <span class="fragment mark-orange" data-fragment-index="1">[(0.0,0.0)]</span> )
+                        </code></pre>
+                    </li>
+
+                    <div style="zoom: 75%">
+                        <div style="float: left; width: 60%; margin-right: 5%">
+                            <div class="fragment" data-fragment-index="1">
+                                <span class="bg-orange">OCaml (4.07.0) Report:</span>
+                                <pre><code class="nohighlight" data-trim>
+                                    This variant expression is expected to have type unit
+                                    The constructor :: does not belong to type unit
+                                </code></pre>
+                            </div>
+
+                            <div class="fragment" data-fragment-index="2">
+                                <span class="bg-red">SHErrLoc Report:</span>
+                                <pre><code class="nohighlight" data-trim>
+                                    Expressions in the source code that appear most
+                                    likely to be wrong: print_string “foo”
+                                </code></pre>
+                            </div>
+                        </div>
+
+                        <div class="fragment" data-fragment-index="1" style="float: right; width: 35%">
+                            <p>Reported location unrelated to error.</p>
+
+                            <p>BTW: message talks about desugared code (no <code>::</code> in source!).</p>
+                        </div>
+                    </div>
+
+
+                    <aside class="notes">
+                        <ul>
+                            <li>OCaml doesn't show the expression at all! Only gives source range.</li>
+
+                            <li>OCaml message refers to desugared code. There is no <code>::</code> in source!</li>
+                        </ul>
+                    </aside>
+                </ul>
+            </section>
+
+            <section>
+                <h2>In This Work</h2>
+
+                Only interested in error <em>locations</em> not messages.
+            </section>
+
+            <section>
+                <h2>Problem with Standard Type Inference</h2>
+
+                <ul>
+                    <li class="fragment">
+                        Local reasoning&mdash;errors are reported at the point inconsistency is detected.
+                    </li>
+
+                    <li class="fragment">
+                        Eager unification and constraint simplification.
+                        <ul>
+                            <li class="fragment">
+                                Loses valuable information.
+                            </li>
+                            <li class="fragment">
+                                Order is builtin to the compiler.
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>SHErrLoc</h2>
+
+                <ul>
+                    <li class="fragment">
+                        Is holistic: looks at the entire constraint <em>graph</em>.
+                    </li>
+                    <li class="fragment">
+                        Considers both satisfiable and unsatisfiable constraints.
+                        <ul>
+                            <li class="fragment">
+                                Intuition: programs are mostly correct.
+                            </li>
+                            <li class="fragment">
+                                Justified using Bayesian principles.
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="fragment">
+                        Is language agnostic&mdash;works over a general constraint language.
+                    </li>
+
+                    <li class="fragment">
+                        Can handle type checking; information flow, data flow, and points-to analysis.
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Evaluation</h2>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Alternative Approaches</h2>
+                </section>
+
+                <section>
+                    <h2>Multiple Error Locations</h2>
+
+                    <ul>
+                        <li> Haskell
+                            <pre><code class="haskell" data-trim data-noescape>
+                                prepend n s =
+                                    <span class="bg-red">n</span> ++ " " ++ s
+
+                                x = prepend <span class="bg-purple">1</span> "line"
+                            </code></pre>
+
+                            <div>
+                                <span class="bg-purple">GHC (8.4.2) Report:</span>
+                                <pre><code class="nohighlight" data-trim>
+                                    No instance for (Num [Char]) arising from
+                                    the literal ‘1’
+                                </code></pre>
+                            </div>
+
+                            <div>
+                                <span class="bg-red">SHErrLoc:</span>
+                                <p><small>Error explanation contains two locations (red and purple).</small></p>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+            </section>
+
+            <section>
+                <h2>Future Work</h2>
+                <ul>
+                    <li class="fragment">
+                        Priors: use data instead of heuristics.
+                    </li>
+
+                    <li class="fragment">
+                        Produce substitutions so we can do type inference.
+                    </li>
+
+                    <li class="fragment">
+                        (Automatically) generate error <em>messages</em>.
+                    </li>
+
+                    <li class="fragment">
+                        Run faster.
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Demo</h2>
+
+                    <p>
+                        Haskell:
+                        <a target="_blank" href="http://apl.cs.cornell.edu/~zhangdf/haskelldiagnostic">
+                            http://apl.cs.cornell.edu/~zhangdf/haskelldiagnostic
+                        </a>
+                    </p>
+
+                    <p>
+                        OCaml:
+                        <a target="_blank" href="http://apl.cs.cornell.edu/~zhangdf/diagnostic">
+                            http://apl.cs.cornell.edu/~zhangdf/diagnostic
+                        </a>
+                    </p>
+                </section>
+
+                <section id="haskell-demo">
+                    <h2>Haskell Demo</h2>
+                    <iframe data-src="http://apl.cs.cornell.edu/~zhangdf/haskelldiagnostic"></iframe>
+                </section>
+
+                <section id="ocaml-demo">
+                    <h2>OCaml Demo</h2>
+                    <iframe data-src="http://apl.cs.cornell.edu/~zhangdf/diagnostic"></iframe>
+                </section>
+            </section>
+
+            <section>
+                Questions?
             </section>
         </div>
     </div>
@@ -186,13 +346,19 @@
     <script src="<%= require('reveal.js/js/reveal.js')%>"></script>
 
     <style>
-        /* Fix list width */
+        /* Fix width of list elements so nested code blocks fit the screen. */
         .reveal .slides section ul {
-            width: 90%;
+            width: 80%;
         }
 
-        .reveal .slides section {
-            border: 2px solid white !important;
+        /* Make iframes full-page. */
+        .reveal .slides section iframe {
+            width: 100%;
+            height: 500px;
+        }
+
+        .reveal .slides.borders section:not(.stack) {
+            border: 2px solid white;
         }
 
         /* <mark> with a color when the time comes, then keep the color. */
