@@ -3,7 +3,7 @@ const webpack               = require('webpack');
 const merge                 = require('webpack-merge');
 const HtmlWebpackPlugin     = require('html-webpack-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
-const ExtractTextPlugin     = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin  = require("mini-css-extract-plugin");
 const CleanWebpackPlugin    = require("clean-webpack-plugin");
 const CopyWebpackPlugin     = require('copy-webpack-plugin');
 
@@ -17,17 +17,9 @@ const TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? prod : dev;
 console.log('WEBPACK GO! Building for ' + TARGET_ENV);
 
 
-// used to extract CSS into a separate file (instead of
-// embedding inside JS)
-const extractCss = new ExtractTextPlugin({
-  filename: "[contenthash].css",
-  allChunks: true,
-  disable: TARGET_ENV === dev
-});
-
-
 // common webpack config (valid for dev and prod)
 var commonConfig = {
+  mode: TARGET_ENV,
 
   entry: {
     index: path.join( __dirname, 'src/index.js' ),
@@ -56,7 +48,7 @@ var commonConfig = {
           {
             loader: 'babel-loader',
             options: {
-              presets: ['env']
+              presets: ['@babel/preset-env']
             }
           },
           {
@@ -86,7 +78,9 @@ var commonConfig = {
       // Don't bundle reveal.js printing CSS files
       {
         test: /\.css$/,
-        include: [/reveal\.js[\/\\]css[\/\\]print/],
+        include: [
+            /reveal\.js[\/\\]css[\/\\]print/
+        ],
         use: [
           {
             loader: 'file-loader',
@@ -97,6 +91,7 @@ var commonConfig = {
           }
         ]
       },
+      // CSS and LESS
       {
         test: /\.(css|less)$/,
         include: [
@@ -104,23 +99,22 @@ var commonConfig = {
             /src/,
             /reveal\.js/,
         ],
-        exclude: [/reveal\.js[\/\\]css[\/\\]print/],
-        use: extractCss.extract({
-          fallback: 'style-loader',
-          use: [
+        exclude: [
+            /reveal\.js[\/\\]css[\/\\]print/
+        ],
+        use: [
+            TARGET_ENV === dev ? 'style-loader' : MiniCssExtractPlugin.loader,
             'css-loader',
             'postcss-loader',
             'less-loader'
-          ]
-        }),
+        ],
       },
       // for semantic-ui-less files:
       {
         test: /\.less$/,
         include: [/semantic-ui-less/],
-        use: extractCss.extract({
-          fallback: 'style-loader',
-          use: [
+        use: [
+            TARGET_ENV === dev ? 'style-loader' : MiniCssExtractPlugin.loader,
             'css-loader',
             'postcss-loader',
             {
@@ -130,8 +124,7 @@ var commonConfig = {
                 siteFolder: path.join(__dirname, 'src/styles/site')
               }
             }
-          ]
-        }),
+        ],
       },
       {
         test: /\.(png|jpg|gif|eot|ttf|woff|woff2|svg)$/,
@@ -147,7 +140,10 @@ var commonConfig = {
   },
 
   plugins: [
-    extractCss,
+    new MiniCssExtractPlugin({
+          filename: '[name].[contenthash].css',
+          chunkFilename: '[id].[hash].css',
+    }),
 
     new FaviconsWebpackPlugin('./src/favicon.png'),
 
