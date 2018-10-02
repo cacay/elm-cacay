@@ -1,0 +1,3 @@
+[submodule "lib/elm-router"]
+	path = lib/elm-router
+	url = https://github.com/cacay/elm-router
