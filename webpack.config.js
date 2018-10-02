@@ -83,10 +83,15 @@ var commonConfig = {
           }
         ]
       },
-      // Don't bundle reveal.js printing CSS files
+      // Don't bundle reveal.js CSS files; keep them as separate files.
       {
         test: /\.css$/,
-        include: [/reveal\.js[\/\\]css[\/\\]print/],
+        include: [
+            /reveal\.js[\/\\]css/,
+            /reveal\.js[\/\\]css[\/\\]theme/,
+            /reveal\.js[\/\\]css[\/\\]print/,
+            /reveal\.js[\/\\]lib[\/\\]css/,
+        ],
         use: [
           {
             loader: 'file-loader',
@@ -102,9 +107,9 @@ var commonConfig = {
         include: [
             // extend this list as necessary
             /src/,
-            /reveal\.js/,
         ],
-        exclude: [/reveal\.js[\/\\]css[\/\\]print/],
+        exclude: [
+        ],
         use: extractCss.extract({
           fallback: 'style-loader',
           use: [
@@ -160,9 +165,14 @@ var commonConfig = {
     }),
 
     new HtmlWebpackPlugin({
-      // using .ejs for template so HTML loaders don't pick it up
       filename: 'presentations/unicode.html',
       template: 'src/presentations/unicode.html',
+      chunks: ['presentation'],
+    }),
+
+    new HtmlWebpackPlugin({
+      filename: 'presentations/sherrloc.html',
+      template: 'src/presentations/sherrloc.html',
       chunks: ['presentation'],
     }),
 

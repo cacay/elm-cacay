@@ -1,9 +1,3 @@
-// Styles
-import 'reveal.js/css/reveal.css'
-import 'reveal.js/css/theme/black.css'
-import 'reveal.js/lib/css/zenburn.css' // code highlighting theme
-
-
 // Copy notes HTML file to the output
 import 'reveal.js/plugin/notes/notes.html'
 
