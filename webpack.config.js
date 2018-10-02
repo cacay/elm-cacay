@@ -101,6 +101,7 @@ var commonConfig = {
         include: [
             // extend this list as necessary
             /src/,
+            /node_modules/,
         ],
         exclude: [
             /reveal\.js/,
@@ -164,6 +165,12 @@ var commonConfig = {
     new HtmlWebpackPlugin({
       filename: 'presentations/unicode.html',
       template: 'src/presentations/unicode.html',
+      chunks: ['presentation'],
+    }),
+
+    new HtmlWebpackPlugin({
+      filename: 'presentations/sherrloc.html',
+      template: 'src/presentations/sherrloc.html',
       chunks: ['presentation'],
     }),
 

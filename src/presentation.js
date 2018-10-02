@@ -1,11 +1,20 @@
 // Copy notes HTML file to the output
 import 'reveal.js/plugin/notes/notes.html'
 
+// Better colors
+import 'colors.css/css/colors.css'
 
 // Initialize `reveal.js`
 Reveal.initialize({
+    // Set aspect ration to 16:9
+    width: 1280,
+    height: 720,
+
     // Display the page number of the current slide
 	slideNumber: true,
+
+	// Update the URL as we move through the slides
+	history: true,
 
     dependencies: [
         // Cross-browser shim that fully implements classList - https://github.com/eligrey/classList.js/

@@ -14,7 +14,7 @@
 
         <!-- Reveal.js theme -->
         <link rel="stylesheet" href="<%= require('reveal.js/css/reveal.css')%>">
-        <link rel="stylesheet" href="<%= require('reveal.js/css/theme/black.css')%>">
+        <link rel="stylesheet" href="<%= require('reveal.js/css/theme/black.css')%>" id="theme">
 
         <!-- Theme used for syntax highlighting of code -->
         <link rel="stylesheet" href="<%= require('reveal.js/lib/css/zenburn.css')%>">
@@ -28,7 +28,7 @@
                     ? "<%= require('reveal.js/css/print/pdf.css')%>"
                     : "<%= require('reveal.js/css/print/paper.css')%>";
                 document.getElementsByTagName( 'head' )[0].appendChild( link );
-            </script>
+        </script>
 
         <!--[if lt IE 9]>
         <script src="<%= require('reveal.js/lib/js/html5shiv.js')%>"></script>
@@ -39,13 +39,138 @@
     <div class="reveal">
         <div class="slides">
             <section>
-                <h2>Barebones Presentation</h2>
-                <p>This example contains the bare minimum includes and markup required to run a reveal.js presentation.</p>
+                <h1>SHErrLoc</h1>
+                <h3>A Static Holistic Error Locator</h3>
+                <p>Presented by <a href="http://www.coskuacay.com/">Josh Acay</a></p>
+
+                <h4 style="margin-top: 1em">Authors</h4>
+                <div>
+                    <div style="display: inline-block; margin-right: 2em">
+                        <small style="margin-right: 1em">Danfeng Zhang</small>
+                        <small>Andrew C. Myers</small>
+                        <br>
+                        Cornell University
+                    </div>
+                    <div style="display: inline-block">
+                        <small style="margin-right: 1em">Dimitrios Vytiniotis</small>
+                        <small>Simon Peyton-Jones</small>
+                        <br>
+                        Microsoft Research
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 1em">PLDG 10/3</h3>
             </section>
 
             <section>
-                <h2>No Theme</h2>
-                <p>There's no theme included, so it will fall back on browser defaults.</p>
+                <h2>Error Messages Suck</h2>
+
+                <ul>
+                    <li> OCaml
+                        <pre><code class="ocaml" data-trim data-noescape>
+                            let f (lst : move list): (float * float) list =
+                                let rec loop lst x y dir acc =
+                                    if lst = [] then
+                                        acc
+                                    else
+                                        <span class="fragment mark-red" data-fragment-index="1">print_string "foo"</span>
+                                in
+                                List.rev ( loop lst 0.0 0.0 0.0 <span class="fragment mark-orange" data-fragment-index="1">[(0.0,0.0)]</span> )
+                        </code></pre>
+                    </li>
+
+                    <div style="zoom: 75%">
+                        <div class="fragment" data-fragment-index="1">
+                            <span class="bg-orange">OCaml (4.07.0) Report:</span>
+                            <pre><code class="nohighlight" data-trim>
+                                This variant expression is expected to have type unit
+                                The constructor :: does not belong to type unit
+                            </code></pre>
+                        </div>
+
+                        <div class="fragment" data-fragment-index="2">
+                            <span class="bg-red">SHErrLoc Report:</span>
+                            <pre><code class="nohighlight" data-trim>
+                                Expressions in the source code that appear most
+                                likely to be wrong: print_string “foo”
+                            </code></pre>
+                        </div>
+                    </div>
+
+
+                    <aside class="notes">
+                        OCaml doesn't show the expression at all! Only gives source range.
+                    </aside>
+                    <aside class="notes">
+                        OCaml message refers to desugared code. There is no <pre>::</pre> in source.
+                    </aside>
+                </ul>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Error Messages Suck</h2>
+
+                    <ul>
+                        <li> Haskell
+                            <pre><code class="haskell" data-trim data-noescape>
+                                fac n =
+                                    if n == <span class="fragment mark-purple" data-fragment-index="1">0</span> then
+                                        1
+                                    else
+                                        n * fac (<span class="fragment mark-red" data-fragment-index="2">n == 1</span>)
+                            </code></pre>
+
+                            <div class="fragment" data-fragment-index="1">
+                                <span class="bg-purple">GHC (8.4.2) Report:</span>
+                                <pre><code class="nohighlight" data-trim>
+                                    No instance for (Num Bool) arising from
+                                    the literal ‘0’
+                                </code></pre>
+                            </div>
+
+                            <div class="fragment" data-fragment-index="2">
+                                <span class="bg-red">SHErrLoc Report:</span>
+                                <pre><code class="nohighlight" data-trim>
+                                    Expressions in the source code that appear most
+                                    likely to be wrong: n == 1
+                                </code></pre>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+
+
+                <section>
+                    <h2>Error Messages Still Suck</h2>
+
+                    <ul>
+                        <li> Haskell
+                            <pre><code class="haskell" data-trim data-noescape>
+                                fac <span class="bg-purple">0</span> =
+                                    1
+                                fac n =
+                                    n * fac (<span class="bg-red">n == 1</span>)
+                            </code></pre>
+
+                            <div>
+                                <span class="bg-purple">GHC (8.4.2) Report:</span>
+                                <pre><code class="nohighlight" data-trim>
+                                    No instance for (Num Bool) arising from
+                                    the literal ‘0’
+                                </code></pre>
+                            </div>
+
+                            <div>
+                                <span class="bg-red">SHErrLoc Report:</span>
+                                <pre><code class="nohighlight" data-trim>
+                                    Expressions in the source code that appear most
+                                    likely to be wrong: n == 1
+                                </code></pre>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
             </section>
 
             <section data-markdown>
@@ -59,5 +184,63 @@
 
     <script src="<%= require('reveal.js/lib/js/head.min.js')%>"></script>
     <script src="<%= require('reveal.js/js/reveal.js')%>"></script>
+
+    <style>
+        /* Fix list width */
+        .reveal .slides section ul {
+            width: 90%;
+        }
+
+        .reveal .slides section {
+            border: 2px solid white !important;
+        }
+
+        /* <mark> with a color when the time comes, then keep the color. */
+	    .reveal .slides section .fragment[class*="mark-"] {
+	        opacity: inherit !important;
+	        visibility: inherit !important;
+	    }
+	    .reveal .slides section .fragment.mark-yellow.visible {
+	        background-color: #FFDC00;
+	    }
+	    .reveal .slides section .fragment.mark-orange.visible {
+	        background-color: #FF851B;
+	    }
+	    .reveal .slides section .fragment.mark-red.visible {
+	        background-color: #FF4136;
+	    }
+	    .reveal .slides section .fragment.mark-purple.visible {
+	        background-color: #B10DC9;
+	    }
+
+        .reveal .slides section .fragment.step-fade-in-then-out {
+	        opacity: 0;
+	        display: none;
+	    }
+        .reveal .slides section .fragment.step-fade-in-then-out.current-fragment {
+	        opacity: 1;
+	        display: inline;
+	    }
+
+        .reveal .slides section .fragment.step-fade-out {
+	        opacity: 1;
+	        visibility: visible !important;
+	        display: inline;
+	    }
+        .reveal .slides section .fragment.step-fade-out.visible {
+	        opacity: 0;
+	        display: none;
+	    }
+
+        .reveal .slides section .fragment.step-fade-in {
+	        opacity: 0;
+	        display: none;
+	    }
+        .reveal .slides section .fragment.step-fade-in.visible {
+	        opacity: 1;
+	        display: inline;
+	    }
+
+    </style>
     </body>
 </html>
