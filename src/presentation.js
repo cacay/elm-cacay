@@ -4,6 +4,11 @@ import 'reveal.js/plugin/notes/notes.html'
 // Better colors
 import 'colors.css/css/colors.css'
 
+// Grids
+import 'semantic-ui-less/definitions/globals/reset.less'
+import 'semantic-ui-less/definitions/collections/grid.less'
+
+
 // Initialize `reveal.js`
 Reveal.initialize({
     // Set aspect ration to 16:9

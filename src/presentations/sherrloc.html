@@ -106,13 +106,13 @@
                     <ul>
                         <li> Haskell
                             <pre><code class="haskell" data-trim data-noescape>
-                                fac <span class="bg-purple">0</span> =
+                                fac <span class="fragment mark-purple" data-fragment-index="1">0</span> =
                                     1
                                 fac n =
-                                    n * fac (<span class="bg-red">n == 1</span>)
+                                    n * fac (<span class="fragment mark-red" data-fragment-index="1">n == 1</span>)
                             </code></pre>
 
-                            <div>
+                            <div class="fragment" data-fragment-index="1">
                                 <span class="bg-purple">GHC (8.4.2) Report:</span>
                                 <pre><code class="nohighlight" data-trim>
                                     No instance for (Num Bool) arising from
@@ -120,7 +120,7 @@
                                 </code></pre>
                             </div>
 
-                            <div>
+                            <div class="fragment" data-fragment-index="1">
                                 <span class="bg-red">SHErrLoc Report:</span>
                                 <pre><code class="nohighlight" data-trim>
                                     Expressions in the source code that appear most
@@ -154,29 +154,33 @@
                     </li>
 
                     <div style="zoom: 75%">
-                        <div style="float: left; width: 60%; margin-right: 5%">
-                            <div class="fragment" data-fragment-index="1">
-                                <span class="bg-orange">OCaml (4.07.0) Report:</span>
-                                <pre><code class="nohighlight" data-trim>
+                        <div class="ui grid">
+                            <div class="ten wide column">
+                                <div class="fragment" data-fragment-index="1">
+                                    <span class="bg-orange">OCaml (4.07.0) Report:</span>
+                                    <pre><code class="nohighlight" data-trim>
                                     This variant expression is expected to have type unit
                                     The constructor :: does not belong to type unit
                                 </code></pre>
-                            </div>
+                                </div>
 
-                            <div class="fragment" data-fragment-index="2">
-                                <span class="bg-red">SHErrLoc Report:</span>
-                                <pre><code class="nohighlight" data-trim>
+                                <div class="fragment" data-fragment-index="2">
+                                    <span class="bg-red">SHErrLoc Report:</span>
+                                    <pre><code class="nohighlight" data-trim>
                                     Expressions in the source code that appear most
                                     likely to be wrong: print_string “foo”
                                 </code></pre>
+                                </div>
+                            </div>
+                            <div class="six wide column">
+                                <div class="fragment" data-fragment-index="1">
+                                    <p>Reported location unrelated to error.</p>
+
+                                    <p>BTW: message talks about desugared code (no <code>::</code> in source!).</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="fragment" data-fragment-index="1" style="float: right; width: 35%">
-                            <p>Reported location unrelated to error.</p>
-
-                            <p>BTW: message talks about desugared code (no <code>::</code> in source!).</p>
-                        </div>
                     </div>
 
 
@@ -245,6 +249,249 @@
                         Can handle type checking; information flow, data flow, and points-to analysis.
                     </li>
                 </ul>
+            </section>
+
+            <section>
+                <h2>Approach Overview</h2>
+                <div style="display: flex; width: 95%; margin: 2.5%">
+                    <div class="bordered" style="flex: 4">
+                        <h4>Source Program</h4>
+                        <div style="zoom: 45%">
+                            <pre><code class="ocaml" data-trim data-noescape>
+                                let f (lst : move list): (float * float) list =
+                                    let rec loop lst x y dir acc =
+                                        if lst = [] then
+                                            acc
+                                        else
+                                            print_string "foo"
+                                    in
+                                    list.rev ( loop lst 0.0 0.0 0.0 [(0.0,0.0)] )
+                            </code></pre>
+                        </div>
+                        <div>
+                            <div class="square white bg-gray" style="display: inline-block; width: 40%; margin: 2.5%">
+                                <div class="content">
+                                    <div><span>Jif</span></div>
+                                </div>
+                            </div>
+                            <div class="square white bg-gray" style="display: inline-block; width: 40%; margin: 2.5%">
+                                <div class="content">
+                                    <div><span>...</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Box around parent-->
+                        <div class="fragment" data-fragment-index="2" style="border: 2px dashed red; position: relative; top: -110%; left: -10%; height: 120%; width: 120%">
+                            <div style="position: absolute; padding: 5px">
+                                <span class="red">
+                                    <strong><small>Language specific</small></strong>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div style="flex: 1">
+                        <div class="aligner">
+                            <div class="item">
+                                \(\rightarrow\)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bordered" style="flex: 4">
+                        <h4>Constraints</h4>
+                        <img src="<%= require('./sherrloc/figures/constraints.png')%>">
+                    </div>
+
+                    <div style="flex: 1">
+                        <div class="aligner">
+                            <div class="item">
+                                \(\rightarrow\)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bordered" style="flex: 4">
+                        <h4>Graph Saturation</h4>
+                        <img src="<%= require('./sherrloc/figures/graph.png')%>">
+                    </div>
+                </div>
+
+                <div style="display: flex; margin-top: 1.5em">
+                    <div class="fragment bordered" data-fragment-index="1" style="flex:1">
+                        <h4>General Heuristics</h4>
+                        <div style="display: inline-block; zoom: 45%">
+                            The error cause is likely to be:
+                            <ul>
+                                <li>
+                                    Simple
+                                </li>
+                                <li>
+                                    Able to explain all errors
+                                </li>
+                                <li>
+                                    Infrequently used on correct paths
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="fragment" data-fragment-index="2" style="flex: 1">
+                        <div class="aligner">
+                            <span class="red item">
+                                <strong>Language agnostic</strong>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    Steps of the algorithm:
+                    <ol>
+                        <li>
+                            Generate constraints from code.
+                        </li>
+                        <li>
+                            Represent constraints as a graph.
+                        </li>
+                        <li>
+                            Saturate the graph by adding inferred paths.
+                        </li>
+                        <li>
+                            If there is an unsatisfiable path:
+                                <ol>
+                                    <li>
+                                        Look at informative paths (source or target is not a variable).
+                                    </li>
+                                    <li>
+                                        Use Bayesian reasoning.
+                                    </li>
+                                </ol>
+                        </li>
+                    </ol>
+                </aside>
+            </section>
+
+            <section>
+                <div class="ui grid">
+                    <div class="four wide column"></div>
+                    <div class="four wide column"></div>
+                    <div class="four wide column"></div>
+                    <div class="four wide column"></div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Constraint Language (SCL)</h2>
+                <div class="fragment" style="display: flex">
+                    <div style="flex: 1">
+                        <script type="math/tex; mode=display">
+                            G ::= A_1 \wedge \ldots \wedge A_n
+                        </script>
+                    </div>
+                </div>
+
+                <div class="fragment" style="display: flex">
+                    <div style="flex: 1">
+                        <script type="math/tex; mode=display">
+                            A ::= H \vdash I
+                        </script>
+                    </div>
+                </div>
+
+                <div class="fragment" style="display: flex">
+                    <div style="flex: 1">
+                        <script type="math/tex; mode=display">
+                            H ::= Q_1 \wedge \ldots \wedge Q_n
+                        </script>
+                    </div>
+
+                    <div style="flex: 1">
+                        <script type="math/tex; mode=display">
+                            Q ::= \forall \overline{a} . C \Rightarrow I
+                        </script>
+                    </div>
+
+                    <div style="flex: 1">
+                        <script type="math/tex; mode=display">
+                            I ::= E_1 \le E_2
+                        </script>
+                    </div>
+                </div>
+
+                <div class="fragment">
+                    <div style="display: flex">
+                        <div style="flex: 1">
+                            <script type="math/tex; mode=display">
+                                C ::= I_1 \wedge \ldots \wedge I_n
+                            </script>
+                        </div>
+                    </div>
+
+                    <div style="display: flex">
+                        <div style="flex: 1">
+                            <script type="math/tex; mode=display">
+                                E ::= \alpha_l
+                                 \mid \mathtt{a}_l
+                                 \mid a
+                                 \mid con_{\overline{p}} \overline{E}
+                                 \mid \overline{con}^i_{p_i} E
+                                 \mid fun \overline{E}
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fragment" style="display: flex">
+                    <div style="flex: 1">
+                        <script type="math/tex; mode=display">
+                            p ::= + \mid - \mid \pm
+                        </script>
+                    </div>
+                </div>
+
+                <div class="fragment" style="display: flex">
+                    <div style="flex: 1">
+                        Unification variables: \(\alpha, \beta, \gamma\)
+                        <br>
+                        Skolem variables: \(\mathtt{a}, \mathtt{b}, \mathtt{c}\)
+                    </div>
+
+                    <div style="flex: 1">
+                        Constructors: \(con\)
+                        <br>
+                        Functions: \(fun\)
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Variables</h2>
+
+                <p>Unification variables are existentially quantified.</p>
+
+                <p>Skolem variables are universally quantified.</p>
+
+                <p class="fragment">
+                    Numbered variables instead of quantification:
+                    <script type="math/tex; mode=display">
+                        \forall \mathtt{a},\mathtt{b} . \exists \alpha.
+                        \mathtt{a} = \mathtt{b} \vdash (\mathtt{a}, \mathtt{b}) = \alpha
+
+                        \iff
+
+                        \mathtt{a}_1 = \mathtt{b}_1 \vdash (\mathtt{a}_1, \mathtt{b}_1) = \alpha_2
+                    </script>
+                </p>
+
+                <p class="fragment">
+                    Constructors are injective:
+                    <script type="math/tex; mode=display">
+                        con~\overline{\tau} = con~\overline{\tau}' \implies \overline{\tau} = \overline{\tau}'
+                    </script>
+                </p>
             </section>
 
             <section>
@@ -339,6 +586,11 @@
             <section>
                 Questions?
             </section>
+
+            <section>
+                <h2>Test Image</h2>
+                <img src="<%= require('./sherrloc/figures/test.png')%>">
+            </section>
         </div>
     </div>
 
@@ -357,9 +609,59 @@
             height: 500px;
         }
 
+        /* Display slide size during development */
         .reveal .slides.borders section:not(.stack) {
             border: 2px solid white;
         }
+
+        /* Veritical alignment */
+        .aligner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            min-height: 100%;
+            max-height: 100%;
+        }
+        .aligner .item {
+            max-width: 50%;
+        }
+
+        /* Square boxes */
+        .square {
+            position: relative;
+            overflow: hidden;
+        }
+        .square:before{
+            content: "";
+            display: block;
+            padding-top: 100%;
+        }
+        .square .content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+        .square .content div {
+           display: table;
+           width: 100%;
+           height: 100%;
+        }
+        .square .content span {
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+
+        /* Make borders visible on bordered elements */
+        .reveal .slides section .bordered,
+	    .reveal .slides section [class*="border--"] {
+	        border-width: 2px;
+	        border-style: solid;
+	    }
 
         /* <mark> with a color when the time comes, then keep the color. */
 	    .reveal .slides section .fragment[class*="mark-"] {
@@ -379,6 +681,8 @@
 	        background-color: #B10DC9;
 	    }
 
+
+        /* Other useful fading effects */
         .reveal .slides section .fragment.step-fade-in-then-out {
 	        opacity: 0;
 	        display: none;
@@ -387,7 +691,6 @@
 	        opacity: 1;
 	        display: inline;
 	    }
-
         .reveal .slides section .fragment.step-fade-out {
 	        opacity: 1;
 	        visibility: visible !important;
@@ -397,7 +700,6 @@
 	        opacity: 0;
 	        display: none;
 	    }
-
         .reveal .slides section .fragment.step-fade-in {
 	        opacity: 0;
 	        display: none;
