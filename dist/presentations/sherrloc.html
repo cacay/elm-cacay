@@ -1,0 +1,1145 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+
+        <title>SHErrLoc: a Static Holistic Error Locator</title>
+
+        <meta name="author" content="Josh Acay">
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <!-- Reveal.js theme -->
+        <link rel="stylesheet" href="/reveal.js/css/reveal.css">
+        <link rel="stylesheet" href="/reveal.js/css/theme/black.css" id="theme">
+
+        <!-- Theme used for syntax highlighting of code -->
+        <link rel="stylesheet" href="/reveal.js/lib/css/zenburn.css">
+
+        <!-- Printing and PDF exports -->
+        <script>
+                var link = document.createElement( 'link' );
+                link.rel = 'stylesheet';
+                link.type = 'text/css';
+                link.href = window.location.search.match( /print-pdf/gi )
+                    ? "/reveal.js/css/print/pdf.css"
+                    : "/reveal.js/css/print/paper.css";
+                document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+
+        <!--[if lt IE 9]>
+        <script src="/reveal.js/lib/js/html5shiv.js"></script>
+        <![endif]-->
+    <link rel="apple-touch-icon" sizes="57x57" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-icon-57x57.png"><link rel="apple-touch-icon" sizes="60x60" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-icon-60x60.png"><link rel="apple-touch-icon" sizes="72x72" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-icon-72x72.png"><link rel="apple-touch-icon" sizes="76x76" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-icon-76x76.png"><link rel="apple-touch-icon" sizes="114x114" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-icon-114x114.png"><link rel="apple-touch-icon" sizes="120x120" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-icon-120x120.png"><link rel="apple-touch-icon" sizes="144x144" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-icon-144x144.png"><link rel="apple-touch-icon" sizes="152x152" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-icon-152x152.png"><link rel="apple-touch-icon" sizes="180x180" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-icon-180x180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="elm-cacay"><meta name="mobile-web-app-capable" content="yes"><meta name="theme-color" content="#fff"><meta name="application-name" content="elm-cacay"><link rel="icon" type="image/png" sizes="32x32" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/favicon-16x16.png"><link rel="shortcut icon" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/favicon.ico"><link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 1)" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-startup-image-320x460.png"><link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-startup-image-640x920.png"><link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-startup-image-640x1096.png"><link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-startup-image-750x1294.png"><link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 3)" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-startup-image-1182x2208.png"><link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 3)" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-startup-image-1242x2148.png"><link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 1)" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-startup-image-748x1024.png"><link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 1)" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-startup-image-768x1004.png"><link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-startup-image-1496x2048.png"><link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" href="/icons-0af8d82cc647a61d5f1b56dc03a51304/apple-touch-startup-image-1536x2008.png"><link href="/presentation.9b0ac28667f57a791d7b.css" rel="stylesheet"></head>
+
+    <body>
+    <div class="reveal">
+        <div class="slides">
+            <section>
+                <h1>SHErrLoc</h1>
+                <h3>A Static Holistic Error Locator</h3>
+                <p>Presented by <a href="http://www.coskuacay.com/">Josh Acay</a></p>
+
+                <h4 style="margin-top: 1em">Authors</h4>
+                <div>
+                    <div style="display: inline-block; margin-right: 2em">
+                        <small style="margin-right: 1em">Danfeng Zhang</small>
+                        <small>Andrew C. Myers</small>
+                        <br>
+                        Cornell University
+                    </div>
+                    <div style="display: inline-block">
+                        <small style="margin-right: 1em">Dimitrios Vytiniotis</small>
+                        <small>Simon Peyton-Jones</small>
+                        <br>
+                        Microsoft Research
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 1em">PLDG 10/3</h3>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Error Messages Suck</h2>
+
+                    <ul>
+                        <li> Haskell
+                            <pre><code class="haskell" data-trim data-noescape>
+                                fac n =
+                                    if n == <span class="fragment mark-purple" data-fragment-index="1">0</span> then
+                                        1
+                                    else
+                                        n * fac (<span class="fragment mark-red" data-fragment-index="2">n == 1</span>)
+                            </code></pre>
+
+                            <div class="fragment" data-fragment-index="1">
+                                <span class="bg-purple">GHC (8.4.2) Report:</span>
+                                <pre><code class="nohighlight" data-trim>
+                                    No instance for (Num Bool) arising from
+                                    the literal ‘0’
+                                </code></pre>
+                            </div>
+
+                            <div class="fragment" data-fragment-index="2">
+                                <span class="bg-red">SHErrLoc Report:</span>
+                                <pre><code class="nohighlight" data-trim>
+                                    Expressions in the source code that appear most
+                                    likely to be wrong: n == 1
+                                </code></pre>
+                            </div>
+
+                            <aside class="notes">
+                                But of course Haskell sucks!
+                            </aside>
+                        </li>
+                    </ul>
+                </section>
+
+
+                <section>
+                    <h2>Error Messages Still Suck</h2>
+
+                    <ul>
+                        <li> Haskell
+                            <pre><code class="haskell" data-trim data-noescape>
+                                fac <span class="fragment mark-purple" data-fragment-index="1">0</span> =
+                                    1
+                                fac n =
+                                    n * fac (<span class="fragment mark-red" data-fragment-index="1">n == 1</span>)
+                            </code></pre>
+
+                            <div class="fragment" data-fragment-index="1">
+                                <span class="bg-purple">GHC (8.4.2) Report:</span>
+                                <pre><code class="nohighlight" data-trim>
+                                    No instance for (Num Bool) arising from
+                                    the literal ‘0’
+                                </code></pre>
+                            </div>
+
+                            <div class="fragment" data-fragment-index="1">
+                                <span class="bg-red">SHErrLoc Report:</span>
+                                <pre><code class="nohighlight" data-trim>
+                                    Expressions in the source code that appear most
+                                    likely to be wrong: n == 1
+                                </code></pre>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+            </section>
+
+            <section>
+                Of course, it's Haskell!
+            </section>
+
+            <section>
+                <h2>OCaml Sucks Worse</h2>
+
+                <ul>
+                    <li> OCaml
+                        <pre><code class="ocaml" data-trim data-noescape>
+                            let f (lst : move list): (float * float) list =
+                                let rec loop lst x y dir acc =
+                                    if lst = [] then
+                                        acc
+                                    else
+                                        <span class="fragment mark-red" data-fragment-index="2">print_string "foo"</span>
+                                in
+                                List.rev ( loop lst 0.0 0.0 0.0 <span class="fragment mark-orange" data-fragment-index="1">[(0.0,0.0)]</span> )
+                        </code></pre>
+                    </li>
+
+                    <div style="zoom: 75%">
+                        <div class="ui grid">
+                            <div class="ten wide column">
+                                <div class="fragment" data-fragment-index="1">
+                                    <span class="bg-orange">OCaml (4.07.0) Report:</span>
+                                    <pre><code class="nohighlight" data-trim>
+                                    This variant expression is expected to have type unit
+                                    The constructor :: does not belong to type unit
+                                </code></pre>
+                                </div>
+
+                                <div class="fragment" data-fragment-index="2">
+                                    <span class="bg-red">SHErrLoc Report:</span>
+                                    <pre><code class="nohighlight" data-trim>
+                                    Expressions in the source code that appear most
+                                    likely to be wrong: print_string “foo”
+                                </code></pre>
+                                </div>
+                            </div>
+                            <div class="six wide column">
+                                <div class="fragment" data-fragment-index="1">
+                                    <p>Reported location unrelated to error.</p>
+
+                                    <p>BTW: message talks about desugared code (no <code>::</code> in source!).</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <aside class="notes">
+                        <ul>
+                            <li>OCaml doesn't show the expression at all! Only gives source range.</li>
+
+                            <li>OCaml message refers to desugared code. There is no <code>::</code> in source!</li>
+                        </ul>
+                    </aside>
+                </ul>
+            </section>
+
+            <section>
+                <h2>In This Work</h2>
+
+                Only interested in error <em>locations</em> not messages.
+            </section>
+
+            <section>
+                <h2>Problem with Standard Type Inference</h2>
+
+                <ul>
+                    <li class="fragment">
+                        It's constraint solving (even if implicit):
+
+                        <script type="math/tex; mode=display">
+                            e := \mathtt{if}~b~\mathtt{then}~e_1~\mathtt{else}~e_2\\
+                            \iff\\
+                            \alpha_{b} = \mathtt{bool},
+                            ~\alpha_{e} = \alpha_{e_1},
+                            ~\alpha_{e} = \alpha_{e_2}
+                        </script>
+                    </li>
+
+                    <li class="fragment">
+                        Eager unification and constraint simplification.
+                        <ul>
+                            <li>
+                                Loses valuable information.
+                            </li>
+                            <li>
+                                Order is builtin to the compiler.
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="fragment">
+                        Local reasoning&mdash;errors are reported at the point inconsistency is detected.
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>SHErrLoc</h2>
+
+                <ul>
+                    <li class="fragment">
+                        Is holistic: looks at the entire constraint <em>graph</em>.
+                    </li>
+                    <li class="fragment">
+                        Considers both satisfiable and unsatisfiable constraints.
+                        <ul>
+                            <li class="fragment">
+                                Intuition: programs are mostly correct.
+                            </li>
+                            <li class="fragment">
+                                Justified using Bayesian principles.
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="fragment">
+                        Is language agnostic&mdash;works over a general constraint language.
+                    </li>
+
+                    <li class="fragment">
+                        Can handle type checking; information flow, data flow, and points-to analysis.
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Approach Overview</h2>
+                <div style="width: 95%; margin: 2.5%">
+                    <div class="ui grid">
+                        <div class="four wide column">
+                            <div class="bordered" style="height: 100%">
+                                <h4>Source Program</h4>
+                                <div style="zoom: 45%">
+                                    <pre><code class="ocaml" data-trim data-noescape>
+                                        let f (lst : move list): (float * float) list =
+                                            let rec loop lst x y dir acc =
+                                                if lst = [] then
+                                                    acc
+                                                else
+                                                    print_string "foo"
+                                            in
+                                            list.rev ( loop lst 0.0 0.0 0.0 [(0.0,0.0)] )
+                                    </code></pre>
+                                </div>
+                                <div>
+                                    <div class="square white bg-gray" style="display: inline-block; width: 40%; margin: 2.5%">
+                                        <div class="content">
+                                            <div><span>Jif</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="square white bg-gray" style="display: inline-block; width: 40%; margin: 2.5%">
+                                        <div class="content">
+                                            <div><span>...</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--Box around parent-->
+                                <div class="fragment" data-fragment-index="2" style="border: 2px dashed red; position: relative; top: -110%; left: -10%; height: 120%; width: 120%">
+                                    <div style="position: absolute; padding: 5px">
+                                        <span class="red">
+                                            <strong><small>Language specific</small></strong>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="one wide column">
+                            <div class="aligner">
+                                <div class="item">
+                                    \(\rightarrow\)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="five wide column">
+                            <div class="bordered" style="height: 100%">
+                                <h4>Constraints</h4>
+                                <img src="/77ea9745d1572f993986c1991ba68018.png">
+                            </div>
+                        </div>
+
+                        <div class="one wide column">
+                            <div class="aligner">
+                                <div class="item">
+                                    \(\rightarrow\)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="five wide column">
+                            <div class="bordered" style="height: 100%">
+                                <h4>Graph Saturation</h4>
+                                <img src="/de756c4fa34bc654c739a7443ec6cfbc.png">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1em">
+                    <div class="ui grid">
+                        <div class="eight wide column">
+                            <div class="fragment bordered" data-fragment-index="1" style="height: 100%">
+                                <h4>General Heuristics</h4>
+                                <div style="display: inline-block; zoom: 35%">
+                                    The error cause is likely to be:
+                                    <ul>
+                                        <li>
+                                            Simple
+                                        </li>
+                                        <li>
+                                            Able to explain all errors
+                                        </li>
+                                        <li>
+                                            Infrequently used on correct paths
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="eight wide column">
+                            <div class="fragment" data-fragment-index="2" style="height: 100%">
+                                <div class="aligner">
+                                    <span class="red item">
+                                        <strong>Language agnostic</strong>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    Steps of the algorithm:
+                    <ol>
+                        <li>
+                            Generate constraints from code.
+                        </li>
+                        <li>
+                            Represent constraints as graph.
+                        </li>
+                        <li>
+                            Saturate the graph by adding inferred paths.
+                        </li>
+                        <li>
+                            If there is an unsatisfiable path...
+                        </li>
+                    </ol>
+                </aside>
+            </section>
+
+            <section>
+                <h2>If There Are Unsatisfiable Paths</h2>
+                <p>
+                    Constraints along unsatisfiable paths form
+                    a complete explanation, but...
+                    <span class="fragment red">too verbose</span>
+                </p>
+
+                <div class="ui grid">
+                    <div class="eight wide column">
+                        <div style="zoom: 90%">
+                            <pre style="margin: 0; width: 100%"><code class="ocaml" data-trim data-noescape>
+                                let f (lst : move list): (float * float) list =
+                                    let rec loop lst x y dir acc<span class="green">3</span> =
+                                        if lst = [] then
+                                            acc<span class="green">5</span>
+                                        else
+                                            print_string "foo"
+                                    in
+                                    List.rev ( loop lst 0.0 0.0 0.0 [(0.0,0.0)] )
+                            </code></pre>
+                        </div>
+                    </div>
+
+                    <div class="eight wide column">
+                        <img src="/baa685755c9aca4010a698451e03a459.png">
+                    </div>
+                </div>
+                <div class="fragment">
+                    <p>Heuristic:</p>
+                    <ol>
+                        <li>
+                            Fewer mistakes is more likely.
+                        </li>
+                        <li>
+                            Erroneous nodes less likely to appear in satisfiable paths.
+                        </li>
+                    </ol>
+                </div>
+
+                <aside class="notes">
+                    <ol>
+                        <li>
+                            Look at informative paths only (source or target is not a variable).
+                        </li>
+                        <li>
+                            (1) points at error already since it's on both paths.
+                        </li>
+                        <li>
+                            Need (2): remove edge between <code>acc</code> and <code>unit</code>.
+                            Now all nodes along P_1 are equally likely.
+                        </li>
+                    </ol>
+                </aside>
+            </section>
+
+            <section>
+                <h2>Constraint Language (SCL)</h2>
+                <div class="fragment" style="display: flex">
+                    <div style="flex: 1">
+                        <script type="math/tex; mode=display">
+                            G ::= A_1 \wedge \ldots \wedge A_n
+                        </script>
+                    </div>
+                </div>
+
+                <div class="fragment" style="display: flex">
+                    <div style="flex: 1">
+                        <script type="math/tex; mode=display">
+                            A ::= H \vdash I
+                        </script>
+                    </div>
+                </div>
+
+                <div class="fragment" style="display: flex">
+                    <div style="flex: 1">
+                        <script type="math/tex; mode=display">
+                            H ::= Q_1 \wedge \ldots \wedge Q_n
+                        </script>
+                    </div>
+
+                    <div style="flex: 1">
+                        <script type="math/tex; mode=display">
+                            I ::= E_1 \le E_2
+                        </script>
+                    </div>
+                </div>
+
+                <div class="fragment">
+                    <div style="display: flex">
+                        <div style="flex: 1">
+                            <script type="math/tex; mode=display">
+                                Q ::= \forall \overline{a} . C \Rightarrow I
+                            </script>
+                        </div>
+
+                        <div style="flex: 1">
+                            <script type="math/tex; mode=display">
+                                C ::= I_1 \wedge \ldots \wedge I_n
+                            </script>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fragment">
+                    <div style="display: flex">
+                        <div style="flex: 1">
+                            <script type="math/tex; mode=display">
+                                E ::= \alpha_l
+                                 \mid \mathtt{a}_l
+                                 \mid a
+                                 \mid con_{\overline{p}} \overline{E}
+                                 \mid \overline{con}^i_{p_i} E
+                                 \mid fun \overline{E}
+                            </script>
+                        </div>
+                    </div>
+
+                    <div style="display: flex">
+                        <div style="flex: 1">
+                            <script type="math/tex; mode=display">
+                            p ::= + \mid - \mid \pm
+                        </script>
+                        </div>
+                    </div>
+
+                    <div style="display: flex">
+                        <div style="flex: 1">
+                            Unification variables: \(\alpha, \beta, \gamma\)
+                            <br>
+                            Skolem variables: \(\mathtt{a}, \mathtt{b}, \mathtt{c}\)
+                        </div>
+
+                        <div style="flex: 1">
+                            Constructors: \(con\)
+                            <br>
+                            Functions: \(fun\)
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Variables</h2>
+
+                <p>Unification variables are existentially quantified.</p>
+
+                <p>Skolem variables are universally quantified.</p>
+
+                <p>
+                    Indexed variables instead of quantification:
+                    <script type="math/tex; mode=display">
+                        \forall \mathtt{a},\mathtt{b} . \exists \alpha.
+                        \mathtt{a} = \mathtt{b} \vdash (\mathtt{a}, \mathtt{b}) = \alpha
+
+                        \iff
+
+                        \mathtt{a}_1 = \mathtt{b}_1 \vdash (\mathtt{a}_1, \mathtt{b}_1) = \alpha_2
+                    </script>
+                </p>
+            </section>
+
+            <section>
+                <h2>Constructors and Functions</h2>
+
+                <p>
+                    Constructors are injective:
+                    <script type="math/tex; mode=display">
+                        con~\overline{\tau} = con~\overline{\tau}' \implies \overline{\tau} = \overline{\tau}'
+                    </script>
+                </p>
+
+                <p class="fragment">
+                    Constructors include base types like <code>int</code> and <code>unit</code>. Also, arrow
+                    types:
+
+                    <script type="math/tex; mode=display">
+                        \mathtt{int} \rightarrow \mathtt{bool}
+                        \approx \mathtt{fn}_{(-, +)}~(\mathtt{int}, \mathtt{bool})
+                    </script>
+                </p>
+
+                <p class="fragment">
+                    Functions needed for Haskell's Type Families etc.
+                </p>
+            </section>
+
+            <section>
+                <h2>Constraint Generation: OCaml</h2>
+                <ul>
+                    <li>
+                        Completely standard
+                    </li>
+                    <li>
+                        \(e : \langle\Gamma, t, C\rangle\) meaning \(e\) has type \(t\) under context \(\Gamma\) constrained by \(C\)
+                    </li>
+                    <li>
+                        Sample rules:
+                        <script type="math/tex; mode=display">
+                            \frac{\alpha, \alpha_x~\text{fresh}}
+                            {x : \langle \{x \mapsto \{\alpha_x\}\}, \alpha, \alpha_x = \alpha \rangle}
+                            \quad
+                            \frac{\alpha~\text{fresh}}
+                            {n : \langle [], \alpha, \mathtt{int} = \alpha \rangle}
+                            \\
+                            \frac{
+                                e_1 : \langle \Gamma_1, t_1, C_1 \rangle
+                                \quad e_2 : \langle \Gamma_2, t_2, C_2 \rangle
+                                \quad \alpha~\text{fresh}
+                            }
+                            {e_1~e_2 : \langle \Gamma_1 \cup \Gamma_2, \alpha, t_1 = t_2 \rightarrow \alpha \wedge C_1 \wedge C_2 \rangle}
+                        </script>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Graph Construction</h2>
+                <ul>
+                    <li>
+                        Node for constraint element \(E\)
+                    </li>
+                    <li>
+                        An edge from \(E_1\) to \(E_2\) labelled \(\mathtt{LEQ}\{H\}\) for each assertion \(H \vdash E_1 \le E_2\)
+                    </li>
+                    <li class="fragment">
+                        \(con^i\) from arguments to constructor and \(\overline{con}^i\) in reverse.
+                    </li>
+                </ul>
+                <div style="margin-top: 2em">
+                    <div class="ui grid">
+                        <div class="eight wide column">
+                            <img src="/77ea9745d1572f993986c1991ba68018.png">
+                        </div>
+                        <div class="eight wide column">
+                            <img src="/de756c4fa34bc654c739a7443ec6cfbc.png">
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    <ul>
+                        <li>
+                            Expressions instead of constraints on nodes.
+                        </li>
+                        <li>
+                            Edge labels not shown.
+                        </li>
+                    </ul>
+                </aside>
+            </section>
+
+            <section>
+                <h2>Graph Saturation</h2>
+
+                <ul>
+                    <li>
+                        Generate all (shortest) paths
+                    </li>
+                    <li class="fragment">
+                        More than transitivity because of hypotheses and constructors.
+                    </li>
+
+                    <li class="fragment">
+                        CFG (Context-free grammar) reachability:
+                        <ul>
+                            <li>
+                                <script type="math/tex; mode=display">
+                                    ( ^p\mathtt{LEQ}{\{H_1 \wedge H_2\}} )
+                                    ::=
+                                    ( ^p\mathtt{LEQ}{\{H_1\}} )
+                                    ( ^p\mathtt{LEQ}{\{H_2\}} )
+                                </script>
+                            </li>
+                            <li>
+                                <script type="math/tex; mode=display">
+                                    ( ^+\mathtt{LEQ}{\{H\}} )
+                                    ::=
+                                    ( ^p con^i )
+                                    ( ^p\mathtt{LEQ}{\{H\}} )
+                                    ( ^p \overline{con}^i )
+                                </script>
+
+                                <script type="math/tex; mode=display">
+                                    ( ^-\mathtt{LEQ}{\{H\}} )
+                                    ::=
+                                    ( ^p con^i )
+                                    ( ^{\overline{p}}\mathtt{LEQ}{\{H\}} )
+                                    ( ^p \overline{con}^i )
+                                </script>
+                            </li>
+                            <li>
+                                ...
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="fragment">
+                        Graph expansion to deal with local hypotheses...see paper.
+                    </li>
+                </ul>
+                <p>
+                </p>
+            </section>
+
+            <section>
+                <h2>We Get Dashed Edges</h2>
+                <img src="/de756c4fa34bc654c739a7443ec6cfbc.png">
+            </section>
+
+            <section>
+                <h2>Explaining the Error</h2>
+                <ul>
+                    <li>
+                        When analysis fails, either
+                        <ul>
+                            <li>
+                                The program is wrong (set of incorrect expressions)
+                            </li>
+                            <li>
+                                Hypotheses are missing
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        The explanation is a set of program points and a set of missing hypotheses.
+                    </li>
+            </section>
+
+            <section>
+                <h2>Ranking Explanations</h2>
+                <ul>
+                    <li>
+                        The most likely explanation:
+                        <script type="math/tex; mode=display">
+                            \operatorname*{arg\,max}_{E, H \in \mathcal{G}} {P (E, H \mid o)}
+                        </script>
+                        <ul>
+                            <li>
+                                \(\mathcal{G}\): explanation (set of expressions and hypotheses)
+                            </li>
+                            <li>
+                                \(\mathcal{o}\): observation (paths and their satisfiability)
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Ranking Explanations</h2>
+                <ul>
+                    <li>
+                        Bayes' theorem:
+                        <script type="math/tex; mode=display">
+                            \operatorname*{arg\,max}_{E, H \in \mathcal{G}} {P_\Psi(E) P (o \mid E, H) P_\Omega(H)}
+                        </script>
+                        <ul class="fragment">
+                            <li>
+                               \(P_\Psi\) prior distribution on expressions
+                            </li>
+                            <li>
+                                \(P_\Omega\)  prior distribution on hypotheses
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Ranking Explanations</h2>
+                <ul>
+                    <li>
+                        Simplify with assumptions:
+                        <script type="math/tex; mode=display">
+                            \operatorname*{arg\,max}_{E, H \in \mathcal{G}}
+                            {P_1^{|E|} \left(\frac {P_2} {1 - P_2}\right)^{k_E} P_\Omega(H)}
+                        </script>
+                        <ul>
+                            <li>
+                                All expressions equally like to be wrong (probability \(P_1\))
+                            </li>
+                            <li>
+                                Errors unlikely to appear on satisfiable paths (probability \(P_2 < 0.5\))
+                            </li>
+                            <li>
+                                \(k_E\) number of satisfiable paths containing \(e \in E\)
+                            </li>
+                            <li class="fragment">
+                                In practice, exact values of \(P_1\), \(P_2\) don't matter
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    Intuitively, error cause likely to be
+                    <ul>
+                        <li>
+                            Simple
+                        </li>
+                        <li>
+                            Not used often on correct paths
+                        </li>
+                    </ul>
+                </aside>
+            </section>
+
+            <section>
+                <h2>Most Likely Wrong Expressions</h2>
+                <script type="math/tex; mode=display">
+                    \operatorname*{arg\,max}_{E}
+                    {P_1^{|E|} \left(\frac {P_2} {1 - P_2}\right)^{k_E}}
+                </script>
+                <ul>
+                    <li>
+                        \(E\) is over <strong>subsets</strong> of all expressions in source (nodes in the constraint graph)
+                    </li>
+                    <li>
+                        \(A^*\) search
+                        <ul>
+                            <li>
+                                Optimal: all most likely wrong expressions are returned
+                            </li>
+                            <li>
+                                Efficient: 10 seconds when the search space is over \(2^{1000}\)
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Most Likely Missing Hypotheses</h2>
+
+                <script type="math/tex; mode=display">
+                    \operatorname*{arg\,max}_{H}
+                    {P_\Omega{(H)}}
+                </script>
+
+                <ul>
+                    <li>
+                        Simplicity is not enough. \(\top \le \bot\) "explains" everything.
+                    </li>
+                    <li>
+                        <strong>Weak</strong> and simple: minimal weakest hypothesis:
+
+                        <div class="fragment">
+                            <script type="math/tex; mode=display">
+                                \mathtt{Bob} \le \mathtt{Carol} \vdash \mathtt{Alice} \le \mathtt{Bob}\\
+                                \mathtt{Bob} \le \mathtt{Carol} \vdash \mathtt{Alice} \le \mathtt{Carol}\\
+                                \mathtt{Bob} \le \mathtt{Carol} \vdash \mathtt{Alice} \le \mathtt{Carol} \sqcup \bot
+                            </script>
+
+                            Minimal: \(\mathtt{Alice} \le \mathtt{Bob}\)
+                        </div>
+                    </li>
+                    <li class="fragment">
+                        See paper for formal definition and search algorithm.
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Evaluation: Implementation</h2>
+                <ul>
+                    <li>
+                        Translation into SCL
+                        <ul>
+                            <li>
+                                Requires minimal effort.
+                            </li>
+                            <li>
+                                OCaml: modified EasyOCaml (500 LOC above 9,000 LOC base)
+                            </li>
+                            <li>
+                                Haskell: modified GHC (450 LOC)
+                            </li>
+                            <li>
+                                Jif (300 LOC above 45,000 LOC base)
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        SHErrLoc implementation
+                        <ul>
+                            <li>
+                                8000 LOC in Java
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Accuracy of Error Reports: OCaml</h2>
+                <ul>
+                    <li>
+                        Data
+                        <ul>
+                            <li>
+                                Homework data from graduate students <cite>[Lerner et al.’07]</cite>
+                            </li>
+                            <li>
+                                336 with type errors (other errors not considered)
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        Metric for report quality
+                        <ul>
+                            <li>
+                                Location of actual error determined using version control.
+                            </li>
+                            <li>
+                                Correctness: tool report includes actual error location
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Accuracy of Error Reports: OCaml</h2>
+                <img src="/efa8ab136cdc5c3d412d793e5437451a.png">
+                <small>Top to bottom: (1) only SHErrLoc, (2, 3) both, (4) neither, (5) only other tool</small>
+            </section>
+
+            <section>
+                <h2>Accuracy of Error Reports: Haskell</h2>
+                <ul>
+                    <li>
+                        Data
+                        <ul>
+                            <li>
+                                CE benchmark: 121 small programs from 22 publications about type-error diagnosis (77 used)
+                            </li>
+
+                            <li>
+                                Helium benchmark: >50,000 first-year undergraduate programs (262 used)
+
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Accuracy of Error Reports: Haskell</h2>
+                <img src="/477f36dd8657ccce41631105c1237c26.png">
+                <small>Top to bottom: (1) only SHErrLoc, (2) both, (3) neither, (4) only other tool</small>
+            </section>
+
+
+            <!--<section>-->
+                <!--<h2>Future Work</h2>-->
+                <!--<ul>-->
+                    <!--<li class="fragment">-->
+                        <!--Priors: use data instead of heuristics.-->
+                    <!--</li>-->
+
+                    <!--<li class="fragment">-->
+                        <!--Produce substitutions so we can do type inference.-->
+                    <!--</li>-->
+
+                    <!--<li>-->
+                        <!--Integrate with <a href="https://dl.acm.org/citation.cfm?doid=2847538.2847543">scope graphs</a>-->
+                        <!--for name resolution.-->
+                    <!--</li>-->
+
+                    <!--<li class="fragment">-->
+                        <!--(Automatically) generate error <em>messages</em>.-->
+                    <!--</li>-->
+
+                    <!--<li class="fragment">-->
+                        <!--Run faster.-->
+                    <!--</li>-->
+                <!--</ul>-->
+            <!--</section>-->
+
+            <section>
+                <section>
+                    <h2>Demo</h2>
+
+                    <p>
+                        Haskell:
+                        <a target="_blank" href="http://apl.cs.cornell.edu/~zhangdf/haskelldiagnostic">
+                            http://apl.cs.cornell.edu/~zhangdf/haskelldiagnostic
+                        </a>
+                    </p>
+
+                    <p>
+                        OCaml:
+                        <a target="_blank" href="http://apl.cs.cornell.edu/~zhangdf/diagnostic">
+                            http://apl.cs.cornell.edu/~zhangdf/diagnostic
+                        </a>
+                    </p>
+                </section>
+
+                <section id="haskell-demo">
+                    <h2>Haskell Demo</h2>
+                    <iframe data-src="http://apl.cs.cornell.edu/~zhangdf/haskelldiagnostic"></iframe>
+                </section>
+
+                <section id="ocaml-demo">
+                    <h2>OCaml Demo</h2>
+                    <iframe data-src="http://apl.cs.cornell.edu/~zhangdf/diagnostic"></iframe>
+                </section>
+            </section>
+
+            <section>
+                <h2>Conclusion</h2>
+                <ul>
+                    <li>
+                        General tool for many static analyses
+                    </li>
+                    <li>
+                        Can pinpoint error locations or give missing hypotheses
+                    </li>
+                    <li>
+                        Bayesian reasoning \(\implies\) state of the art error locations
+                    </li>
+                </ul>
+
+            </section>
+
+            <section>
+                <h1>Questions?</h1>
+            </section>
+        </div>
+    </div>
+
+    <script src="/reveal.js/lib/js/head.min.js"></script>
+    <script src="/reveal.js/js/reveal.js"></script>
+
+    <style>
+        /* Fix width of list elements so nested code blocks fit the screen. */
+        .reveal .slides section ul {
+            width: 80%;
+        }
+
+        /* Make iframes full-page. */
+        .reveal .slides section iframe {
+            width: 100%;
+            height: 500px;
+        }
+
+        /* Display slide size during development */
+        .reveal .slides.borders section:not(.stack) {
+            border: 2px solid white;
+        }
+
+        /* Veritical alignment */
+        .aligner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            min-height: 100%;
+            max-height: 100%;
+        }
+        .aligner .item {
+            max-width: 50%;
+        }
+
+        /* Square boxes */
+        .square {
+            position: relative;
+            overflow: hidden;
+        }
+        .square:before{
+            content: "";
+            display: block;
+            padding-top: 100%;
+        }
+        .square .content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+        .square .content div {
+           display: table;
+           width: 100%;
+           height: 100%;
+        }
+        .square .content span {
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+
+        /* Make borders visible on bordered elements */
+        .reveal .slides section .bordered,
+	    .reveal .slides section [class*="border--"] {
+	        border-width: 2px;
+	        border-style: solid;
+	    }
+
+        /* <mark> with a color when the time comes, then keep the color. */
+	    .reveal .slides section .fragment[class*="mark-"] {
+	        opacity: inherit !important;
+	        visibility: inherit !important;
+	    }
+	    .reveal .slides section .fragment.mark-yellow.visible {
+	        background-color: #FFDC00;
+	    }
+	    .reveal .slides section .fragment.mark-orange.visible {
+	        background-color: #FF851B;
+	    }
+	    .reveal .slides section .fragment.mark-red.visible {
+	        background-color: #FF4136;
+	    }
+	    .reveal .slides section .fragment.mark-purple.visible {
+	        background-color: #B10DC9;
+	    }
+
+
+        /* Other useful fading effects */
+        .reveal .slides section .fragment.step-fade-in-then-out {
+	        opacity: 0;
+	        display: none;
+	    }
+        .reveal .slides section .fragment.step-fade-in-then-out.current-fragment {
+	        opacity: 1;
+	        display: inline;
+	    }
+        .reveal .slides section .fragment.step-fade-out {
+	        opacity: 1;
+	        visibility: visible !important;
+	        display: inline;
+	    }
+        .reveal .slides section .fragment.step-fade-out.visible {
+	        opacity: 0;
+	        display: none;
+	    }
+        .reveal .slides section .fragment.step-fade-in {
+	        opacity: 0;
+	        display: none;
+	    }
+        .reveal .slides section .fragment.step-fade-in.visible {
+	        opacity: 1;
+	        display: inline;
+	    }
+
+    </style>
+    <script type="text/javascript" src="/presentation.js"></script></body>
+</html>
