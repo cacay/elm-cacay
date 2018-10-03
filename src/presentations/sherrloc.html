@@ -208,21 +208,21 @@
                         It's constraint solving (even if implicit):
 
                         <script type="math/tex; mode=display">
-                            e := \mathtt{if}~e_1~\mathtt{then}~e_2~\mathtt{else}~e_3\\
+                            e := \mathtt{if}~b~\mathtt{then}~e_1~\mathtt{else}~e_2\\
                             \iff\\
-                            \alpha_{e_1} = \mathtt{bool},
-                            ~\alpha_{e} = \alpha_{e_2},
-                            ~\alpha_{e} = \alpha_{e_3}
+                            \alpha_{b} = \mathtt{bool},
+                            ~\alpha_{e} = \alpha_{e_1},
+                            ~\alpha_{e} = \alpha_{e_2}
                         </script>
                     </li>
 
                     <li class="fragment">
                         Eager unification and constraint simplification.
                         <ul>
-                            <li class="fragment">
+                            <li>
                                 Loses valuable information.
                             </li>
-                            <li class="fragment">
+                            <li>
                                 Order is builtin to the compiler.
                             </li>
                         </ul>
@@ -393,7 +393,7 @@
             </section>
 
             <section>
-                <h2>If There is a Conflict</h2>
+                <h2>If There Are Unsatisfiable Paths</h2>
                 <p>
                     Constraints along unsatisfiable paths form
                     a complete explanation, but...
@@ -401,21 +401,35 @@
                 </p>
 
                 <div class="ui grid">
-                    <div class="eight wide column fragment">
-                        <p>Heuristic:</p>
-                        <ol>
-                            <li>
-                                Fewer mistakes is more likely.
-                            </li>
-                            <li>
-                                Erroneous nodes less likely to appear in satisfiable paths.
-                            </li>
-                        </ol>
+                    <div class="eight wide column">
+                        <div style="zoom: 90%">
+                            <pre style="margin: 0; width: 100%"><code class="ocaml" data-trim data-noescape>
+                                let f (lst : move list): (float * float) list =
+                                    let rec loop lst x y dir acc<span class="green">3</span> =
+                                        if lst = [] then
+                                            acc<span class="green">5</span>
+                                        else
+                                            print_string "foo"
+                                    in
+                                    List.rev ( loop lst 0.0 0.0 0.0 [(0.0,0.0)] )
+                            </code></pre>
+                        </div>
                     </div>
 
-                    <div class="eight wide column fragment">
+                    <div class="eight wide column">
                         <img src="<%= require('./sherrloc/figures/graph-marked.png')%>">
                     </div>
+                </div>
+                <div class="fragment">
+                    <p>Heuristic:</p>
+                    <ol>
+                        <li>
+                            Fewer mistakes is more likely.
+                        </li>
+                        <li>
+                            Erroneous nodes less likely to appear in satisfiable paths.
+                        </li>
+                    </ol>
                 </div>
 
                 <aside class="notes">
@@ -461,12 +475,6 @@
 
                     <div style="flex: 1">
                         <script type="math/tex; mode=display">
-                            Q ::= \forall \overline{a} . C \Rightarrow I
-                        </script>
-                    </div>
-
-                    <div style="flex: 1">
-                        <script type="math/tex; mode=display">
                             I ::= E_1 \le E_2
                         </script>
                     </div>
@@ -476,11 +484,19 @@
                     <div style="display: flex">
                         <div style="flex: 1">
                             <script type="math/tex; mode=display">
+                                Q ::= \forall \overline{a} . C \Rightarrow I
+                            </script>
+                        </div>
+
+                        <div style="flex: 1">
+                            <script type="math/tex; mode=display">
                                 C ::= I_1 \wedge \ldots \wedge I_n
                             </script>
                         </div>
                     </div>
+                </div>
 
+                <div class="fragment">
                     <div style="display: flex">
                         <div style="flex: 1">
                             <script type="math/tex; mode=display">
@@ -493,27 +509,27 @@
                             </script>
                         </div>
                     </div>
-                </div>
 
-                <div class="fragment" style="display: flex">
-                    <div style="flex: 1">
-                        <script type="math/tex; mode=display">
+                    <div style="display: flex">
+                        <div style="flex: 1">
+                            <script type="math/tex; mode=display">
                             p ::= + \mid - \mid \pm
                         </script>
-                    </div>
-                </div>
-
-                <div class="fragment" style="display: flex">
-                    <div style="flex: 1">
-                        Unification variables: \(\alpha, \beta, \gamma\)
-                        <br>
-                        Skolem variables: \(\mathtt{a}, \mathtt{b}, \mathtt{c}\)
+                        </div>
                     </div>
 
-                    <div style="flex: 1">
-                        Constructors: \(con\)
-                        <br>
-                        Functions: \(fun\)
+                    <div style="display: flex">
+                        <div style="flex: 1">
+                            Unification variables: \(\alpha, \beta, \gamma\)
+                            <br>
+                            Skolem variables: \(\mathtt{a}, \mathtt{b}, \mathtt{c}\)
+                        </div>
+
+                        <div style="flex: 1">
+                            Constructors: \(con\)
+                            <br>
+                            Functions: \(fun\)
+                        </div>
                     </div>
                 </div>
             </section>
@@ -525,7 +541,7 @@
 
                 <p>Skolem variables are universally quantified.</p>
 
-                <p class="fragment">
+                <p>
                     Indexed variables instead of quantification:
                     <script type="math/tex; mode=display">
                         \forall \mathtt{a},\mathtt{b} . \exists \alpha.
@@ -599,9 +615,9 @@
                         Node for constraint element \(E\)
                     </li>
                     <li>
-                        An edge \(\mathtt{LEQ}\{H\}\) for each assertion \(H \vdash E_1 \le E_2\)
+                        An edge from \(E_1\) to \(E_2\) labelled \(\mathtt{LEQ}\{H\}\) for each assertion \(H \vdash E_1 \le E_2\)
                     </li>
-                    <li>
+                    <li class="fragment">
                         \(con^i\) from arguments to constructor and \(\overline{con}^i\) in reverse.
                     </li>
                 </ul>
@@ -632,12 +648,15 @@
                 <h2>Graph Saturation</h2>
 
                 <ul>
+                    <li>
+                        Generate all (shortest) paths
+                    </li>
                     <li class="fragment">
-                        More than transitive reachability because of hypotheses and constructors.
+                        More than transitivity because of hypotheses and constructors.
                     </li>
 
                     <li class="fragment">
-                        Context-free language reachability:
+                        CFG (Context-free grammar) reachability:
                         <ul>
                             <li>
                                 <script type="math/tex; mode=display">
@@ -679,18 +698,28 @@
             </section>
 
             <section>
-                <h2>When Analysis Fails</h2>
+                <h2>We Get Dashed Edges</h2>
+                <img src="<%= require('./sherrloc/figures/graph.png')%>">
+            </section>
+
+            <section>
+                <h2>Explaining the Error</h2>
                 <ul>
                     <li>
-                        The program is wrong (set of incorrect expressions)
+                        When analysis fails, either
+                        <ul>
+                            <li>
+                                The program is wrong (set of incorrect expressions)
+                            </li>
+                            <li>
+                                Hypotheses are missing
+                            </li>
+                        </ul>
                     </li>
+
                     <li>
-                        Hypotheses are missing
+                        The explanation is a set of program points and a set of missing hypotheses.
                     </li>
-                    <li>
-                        The explanation is a set of program expressions and a set of missing hypotheses.
-                    </li>
-                </ul>
             </section>
 
             <section>
@@ -889,7 +918,7 @@
             <section>
                 <h2>Accuracy of Error Reports: OCaml</h2>
                 <img src="<%= require('./sherrloc/figures/comparison-ocaml.png')%>">
-                <small>Top to bottom: (1) only SHErrLoc, (2) both, (3) neither, (4) only other tool</small>
+                <small>Top to bottom: (1) only SHErrLoc, (2, 3) both, (4) neither, (5) only other tool</small>
             </section>
 
             <section>
@@ -991,7 +1020,7 @@
             </section>
 
             <section>
-                Questions?
+                <h1>Questions?</h1>
             </section>
         </div>
     </div>
