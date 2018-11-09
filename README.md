@@ -1,4 +1,6 @@
-# elm-cacay
+# elm-cacay - DEPRECATED
+
+This repo is deprecated. I moved my website to [github.io](https://github.io).
 
 This is my website built using [Elm](http://elm-lang.org/), [Semantic UI](http://semantic-ui.com/), and [webpack](https://webpack.github.io/).
 
